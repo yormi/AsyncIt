@@ -2,13 +2,41 @@
 
 /* global it */
 
-import assert from 'assert'
+import {
+  renderIntoDocument
+} from 'react'
+import {
+  unmountComponentAtNode,
+  findDOMNode
+} from 'react-dom'
 
-export function asyncIt (description, test, option) {
-  async function fn (done) {
-    function enhancedDone (text) {
+let renderedApp
+
+export const renderApp = (rootElement) => {
+  renderedApp = renderIntoDocument(rootElement)
+  return renderedApp
+}
+
+export const asyncIt = (description, test, option) => {
+  const decoratedTest = _decorateTest(test)
+
+  switch (option) {
+    case 'only':
+      it.only(description, decoratedTest)
+      break
+    case 'skip':
+      it.skip(description, decoratedTest)
+      break
+    default:
+      it(description, decoratedTest)
+  }
+}
+
+export const _decorateTest = (test) => {
+  return async (done) => {
+    const enhancedDone = (err) => {
       cleanDom()
-      done(text)
+      done(err)
     }
 
     try {
@@ -16,17 +44,6 @@ export function asyncIt (description, test, option) {
     } catch (err) {
       enhancedDone(err)
     }
-  }
-
-  switch (option) {
-    case 'only':
-      it.only(description, fn)
-      break
-    case 'skip':
-      it.skip(description, fn)
-      break
-    default:
-      it(description, fn)
   }
 }
 

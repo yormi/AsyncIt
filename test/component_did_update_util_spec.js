@@ -10,7 +10,7 @@ import {
 
 import React from 'react'
 
-import '~/src/setup_fake_dom'
+import '~/src/setup/setup_fake_dom'
 import {
   listenOnComponentDidUpdate,
   restoreComponentDidUpdate

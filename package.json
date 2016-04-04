@@ -23,6 +23,7 @@
     "nodemon": "^1.9.1",
     "react": "^0.14.8",
     "react-addons-test-utils": "^0.14.8",
+    "react-dom": "^0.14.8",
     "sinon": "^1.17.3",
     "standard": "^5.4.1"
   },
