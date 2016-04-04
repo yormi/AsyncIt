@@ -1,32 +1,66 @@
 'use strict'
 
-import assert from 'assert'
+// import assert from 'assert'
 import {
-  findRenderedComponentWithType,
-  scryRenderedComponentsWithType,
-  isCompositeComponent,
-  renderIntoDocument
+  // scryRenderedComponentsWithType,
+  isCompositeComponent
 } from 'react-addons-test-utils'
-import unexpected from 'unexpected'
-import unexpectedReact from 'unexpected-react'
+// import unexpected from 'unexpected'
+// import unexpectedReact from 'unexpected-react'
 
-let renderedApp
+import {
+  listenOnComponentDidUpdate
+} from '~/src/component_did_update_util'
 
-export function renderApp (rootComponent) {
-  renderedApp = renderIntoDocument(rootComponent)
-  return renderedApp
-}
+// const expect = unexpected.clone().use(unexpectedReact)
 
-const expect = unexpected.clone().use(unexpectedReact)
+export default class {
+  constructor () {
+    const FIRST_RENDER = () => true
 
-export const when = {
-  NOW: 'now',
-  FIRST_RENDER: () => true
+    this._readyWhen = FIRST_RENDER
+    this._component
+    this._isDebugModeOn = false
+  }
+
+  listenOn (component) {
+    this._component = component
+    return this
+  }
+
+  readyWhen (testFunction) {
+    this._readyWhen = testFunction
+    return this
+  }
+
+  triggerWith (actionFunction) {
+    const self = this
+    return new Promise(function (resolve, reject) {
+      self._setUpListener(resolve, reject)
+      actionFunction()
+    })
+  }
+
+  _setUpListener (resolve, reject) {
+    listenOnComponentDidUpdate(this._component, () => {
+      try {
+        if (this._isDebugModeOn) {
+          printLog(this._component)
+        }
+
+        if (this._readyWhen()) {
+          resolve()
+        }
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
 }
 
 export function Test (done) {
   this._done = done
-  this._when = when.NOW
+  this._when = true
   this._componentOrGetter
   this._isDebugModeOn = false
   this._hookedOn
@@ -60,41 +94,43 @@ export function Test (done) {
     return this
   }
 
-  this.expectToRender = function (expectation) {
-    const test = async function () {
-      await expect(this._getComponent(), 'to contain', expectation)
-    }
-    this._setUpTest(test)
-    return this
-  }
+  /*
+     this.expectToRender = function (expectation) {
+     const test = async function () {
+     await expect(this._getComponent(), 'to contain', expectation)
+     }
+     this._setUpTest(test)
+     return this
+     }
 
-  this.expectNotToRenderComponentType = function (componentType) {
-    const test = () => {
-      const componentsOfType = scryRenderedComponentsWithType(this._getComponent(), componentType)
-      if (componentsOfType.length > 0) {
-        throw new Error('No component of type: ' + componentType + 'should be found')
-      }
-    }
-    this._setUpTest(test)
-    return this
-  }
+     this.expectNotToRenderComponentType = function (componentType) {
+     const test = () => {
+     const componentsOfType = scryRenderedComponentsWithType(this._getComponent(), componentType)
+     if (componentsOfType.length > 0) {
+     throw new Error('No component of type: ' + componentType + 'should be found')
+     }
+     }
+     this._setUpTest(test)
+     return this
+     }
 
-  this.expectRenderedRef = function (ref) {
-    const test = () => assert.ok(this._getComponent().refs[ref], `The ref "${ref}" was not found`)
-    this._setUpTest(test)
-    return this
-  }
+     this.expectRenderedRef = function (ref) {
+     const test = () => assert.ok(this._getComponent().refs[ref], `The ref "${ref}" was not found`)
+     this._setUpTest(test)
+     return this
+     }
 
-  this.expectNoRef = function (ref) {
-    const test = () => assert.ok(!this._getComponent().refs[ref], `The ref "${ref}" was found`)
-    this._setUpTest(test)
-    return this
-  }
+     this.expectNoRef = function (ref) {
+     const test = () => assert.ok(!this._getComponent().refs[ref], `The ref "${ref}" was found`)
+     this._setUpTest(test)
+     return this
+     }
 
-  this.customTest = function (test) {
-    this._setUpTest(test)
-    return this
-  }
+     this.customTest = function (test) {
+     this._setUpTest(test)
+     return this
+     }
+     */
 
   this._getComponent = function () {
     let component
@@ -117,7 +153,7 @@ export function Test (done) {
   this._setUpTest = async function (test) {
     const boundTest = test.bind(this)
 
-    if (this._when === when.NOW) {
+    if (this._when === true) {
       try {
         await test()
       } catch (err) {

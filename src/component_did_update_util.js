@@ -1,7 +1,7 @@
 'use strict'
 
 export const listenOnComponentDidUpdate = (component, func) => {
-  const currentListener = component.componentDidUpdate
+  const currentListener = component.componentDidUpdate || (() => null)
   const newListener = () => {
     currentListener()
     func()

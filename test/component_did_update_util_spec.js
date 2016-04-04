@@ -36,35 +36,47 @@ describe('Component Did Update Utility', () => {
   }
 
   describe('listenOnComponentDidUpdate', () => {
-    beforeEach(() => {
+    it('handles no componentDidUpdate definition on the component', () => {
+      class Test extends React.Component {
+        render () {
+          return <h1>Chocolate</h1>
+        }
+      }
       const component = renderIntoDocument(<Test />)
       listenOnComponentDidUpdate(component, addedListener)
-      component.componentDidUpdate()
     })
 
-    it('keeps the previous behavior', () => {
-      assert(oldListener.calledOnce, 'the previous listener was not called once but: ' + oldListener.callCount)
+    describe('with a componentDidUpdate definition', () => {
+      beforeEach(() => {
+        const component = renderIntoDocument(<Test />)
+        listenOnComponentDidUpdate(component, addedListener)
+        component.componentDidUpdate()
+      })
+
+      it('keeps the previous behavior', () => {
+        assert(oldListener.calledOnce, 'the previous listener was not called once but: ' + oldListener.callCount)
+      })
+
+      it('adds the given behavior', () => {
+        assert(addedListener.calledOnce, 'The previous listener was not called once but: ' + addedListener.callCount)
+      })
     })
 
-    it('adds the given behavior', () => {
-      assert(addedListener.calledOnce, 'The previous listener was not called once but: ' + addedListener.callCount)
-    })
-  })
+    describe('restoreComponentDidUpdate', () => {
+      beforeEach(() => {
+        const component = renderIntoDocument(<Test />)
+        listenOnComponentDidUpdate(component, addedListener)
+        restoreComponentDidUpdate(component)
+        component.componentDidUpdate()
+      })
 
-  describe('restoreComponentDidUpdate', () => {
-    beforeEach(() => {
-      const component = renderIntoDocument(<Test />)
-      listenOnComponentDidUpdate(component, addedListener)
-      restoreComponentDidUpdate(component)
-      component.componentDidUpdate()
-    })
+      it('keeps the initial behavior', () => {
+        assert(oldListener.calledOnce, 'the previous listener was not called once but: ' + oldListener.callCount)
+      })
 
-    it('keeps the initial behavior', () => {
-      assert(oldListener.calledOnce, 'the previous listener was not called once but: ' + oldListener.callCount)
-    })
-
-    it('removes the added behavior', () => {
-      assert.strictEqual(addedListener.callCount, 0, 'the previous listener was called: ' + addedListener.callCount)
+      it('removes the added behavior', () => {
+        assert.strictEqual(addedListener.callCount, 0, 'the previous listener was called: ' + addedListener.callCount)
+      })
     })
   })
 })
