@@ -5,7 +5,13 @@
 import assert from 'assert'
 import sinon from 'sinon'
 
-import { _decorateTest } from '~/src/async_it'
+import React from 'react'
+
+import {
+  _cleanDom,
+  _decorateTest,
+  renderApp
+} from '~/src/async_it'
 
 describe('Async it', () => {
   describe('function passed to mocha\'s it', () => {
@@ -14,10 +20,6 @@ describe('Async it', () => {
 
     beforeEach(() => {
       done.reset()
-    })
-
-    it.skip('calls done after a successful test', () => {
-
     })
 
     it('catches synchronous error in the test and pass it to done', async () => {
@@ -36,6 +38,58 @@ describe('Async it', () => {
 
       assert(done.calledOnce, 'done was not called once but:' + done.callCount)
       assert(done.calledWith(someError), 'done was not called with the error')
+    })
+  })
+
+  describe('cleanDom', () => {
+    it('does not throw anything if the app has not been rendered... even without fake dom', () => {
+      _cleanDom()
+    })
+
+    describe('renderApp', () => {
+      it('mounts the app', () => {
+        let isMounted = false
+
+        class App extends React.Component {
+          componentDidMount () {
+            isMounted = true
+          }
+
+          render () {
+            return <h1>This is my fantastic App !</h1>
+          }
+        }
+        require('../src/setup/setup_fake_dom')
+        renderApp(<App />)
+
+        _cleanDom()
+
+        assert(isMounted)
+      })
+    })
+
+    it('remove the app/root component of the fake dom', () => {
+      let isMounted = false
+
+      class App extends React.Component {
+        componentDidMount () {
+          isMounted = true
+        }
+
+        componentWillUnmount () {
+          isMounted = false
+        }
+
+        render () {
+          return <h1>This is my fantastic App !</h1>
+        }
+      }
+      require('../src/setup/setup_fake_dom')
+      renderApp(<App />)
+
+      _cleanDom()
+
+      assert.strictEqual(isMounted, false)
     })
   })
 })

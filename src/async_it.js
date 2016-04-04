@@ -4,7 +4,7 @@
 
 import {
   renderIntoDocument
-} from 'react'
+} from 'react-addons-test-utils'
 import {
   unmountComponentAtNode,
   findDOMNode
@@ -35,7 +35,7 @@ export const asyncIt = (description, test, option) => {
 export const _decorateTest = (test) => {
   return async (done) => {
     const enhancedDone = (err) => {
-      cleanDom()
+      _cleanDom()
       done(err)
     }
 
@@ -47,13 +47,13 @@ export const _decorateTest = (test) => {
   }
 }
 
-function cleanDom () {
+export function _cleanDom () {
   try {
     if (renderedApp) {
       unmountComponentAtNode(findDOMNode(renderedApp).parentNode)
+      renderedApp = null
     }
   } catch (err) {
     console.info('Error while cleaning the dom: ', err)
   }
-  renderedApp = null
 }
