@@ -17,9 +17,10 @@ someone !
 Highly appreciated ! I'm unfortunately not perfect yet.
 
 For pull request,
-Just make sure to add tests with your work :)
-Oh and, npm run lint
+Just make sure to add tests with your work.
+Oh, oh ! Why not npm run lint as well :)
 
 ## Todo
+
 * Tests for waitOnRoute
-* polyfill !? 
+* polyfill !?
