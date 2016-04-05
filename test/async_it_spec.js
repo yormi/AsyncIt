@@ -60,7 +60,7 @@ describe('Async it', () => {
           }
         }
         require('../src/setup/setup_fake_dom')
-        renderApp(<App />)
+        renderApp(App)
 
         _cleanDom()
 
@@ -85,7 +85,7 @@ describe('Async it', () => {
         }
       }
       require('../src/setup/setup_fake_dom')
-      renderApp(<App />)
+      renderApp(App)
 
       _cleanDom()
 

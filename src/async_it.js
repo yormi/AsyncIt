@@ -2,34 +2,41 @@
 
 /* global it */
 
+import React from 'react'
 import {
   renderIntoDocument
 } from 'react-addons-test-utils'
+import wrapReactLifecycleMethodsWithTryCatch, { config } from 'react-component-errors'
 import {
   unmountComponentAtNode,
   findDOMNode
 } from 'react-dom'
 
+config.errorHandler = (errorReport) => {
+  throw errorReport.error
+}
+
 let renderedApp
 
-export const renderApp = (rootElement) => {
-  renderedApp = renderIntoDocument(rootElement)
+export const renderApp = (RootComponent, props) => {
+  wrapReactLifecycleMethodsWithTryCatch(RootComponent)
+  renderedApp = renderIntoDocument(<RootComponent {...props} />)
   return renderedApp
 }
 
-export const asyncIt = (description, test, option) => {
+export const asyncIt = (description, test) => {
   const decoratedTest = _decorateTest(test)
+  it(description, decoratedTest)
+}
 
-  switch (option) {
-    case 'only':
-      it.only(description, decoratedTest)
-      break
-    case 'skip':
-      it.skip(description, decoratedTest)
-      break
-    default:
-      it(description, decoratedTest)
-  }
+asyncIt.only = (description, test) => {
+  const decoratedTest = _decorateTest(test)
+  it.only(description, decoratedTest)
+}
+
+asyncIt.skip = (description, test) => {
+  const decoratedTest = _decorateTest(test)
+  it.skip(description, decoratedTest)
 }
 
 export const _decorateTest = (test) => {
