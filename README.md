@@ -7,6 +7,7 @@ someone !
 
 ## Possible with the great work behind:
 
+* mocha
 * unexpected-react
 * react-component-errors
 * jsdom
@@ -18,7 +19,7 @@ Highly appreciated ! I'm unfortunately not perfect yet.
 
 For pull request,
 Just make sure to add tests with your work.
-Oh, oh ! Why not npm run lint as well :)
+Oh, oh ! Why not `npm run lint` as well :)
 
 ## Todo
 

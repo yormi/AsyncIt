@@ -1,9 +1,10 @@
 {
   "name": "async-it",
   "version": "1.0.0",
-  "description": "Looking to be a solution for integration/end-to-end test with React",
-  "main": "index.js",
+  "description": "Solution for easy integration/end-to-end test with React",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "babel src --out-dir dist",
     "test": "mocha test --compilers js:babel-core/register -r babel-polyfill --recursive",
     "test-watch": "nodemon -q --exec 'npm run test -s'",
     "lint": "standard | snazzy",
@@ -19,6 +20,7 @@
   "author": "Guillaume Lambert <glamb93@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.6.5",
     "babel-core": "^6.7.4",
     "babel-eslint": "^6.0.2",
     "babel-polyfill": "^6.7.4",
