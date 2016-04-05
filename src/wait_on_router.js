@@ -4,6 +4,9 @@ import { findRenderedComponentWithType } from 'react-addons-test-utils'
 import { Router } from 'react-router'
 
 import { getRoute } from '~/end_to_end/helpers/essentials'
+import {
+  listenOnComponentDidUpdate
+} from '~/src/utils/component_did_update_util'
 
 export function waitToBeOnRoute (app, targetRoute, trigger) {
   if (typeof trigger !== 'function') {

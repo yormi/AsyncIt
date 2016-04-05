@@ -1,12 +1,9 @@
 'use strict'
 
 import {
-  isCompositeComponent
-} from 'react-addons-test-utils'
-
-import {
-  listenOnComponentDidUpdate
-} from '~/src/component_did_update_util'
+  listenOnComponentDidUpdate,
+  restoreComponentDidUpdate
+} from '~/src/utils/component_did_update_util'
 
 export default class {
   constructor () {
@@ -48,9 +45,11 @@ export default class {
         }
 
         if (this._readyWhen()) {
+          restoreComponentDidUpdate(this._component)
           resolve()
         }
       } catch (err) {
+        restoreComponentDidUpdate(this._component)
         reject(err)
       }
     })

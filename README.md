@@ -1,8 +1,25 @@
 # AsyncIt
-My quest to make integration-system-functional test with React easy
 
-/!\ Construction Zone /!\
+My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for
+someone !
 
-doneEnhancer (done, err)
-done: mocha's done
-err: error normally passed to mocha's done
+# /!\ Construction Zone /!\
+
+## Possible with the great work behind:
+
+* unexpected-react
+* react-component-errors
+* jsdom
+* React and its test-util (dah !)
+
+## Feedbacks... Contributions...
+
+Highly appreciated ! I'm unfortunately not perfect yet.
+
+For pull request,
+Just make sure to add tests with your work :)
+Oh and, npm run lint
+
+## Todo
+* Tests for waitOnRoute
+* polyfill !? 

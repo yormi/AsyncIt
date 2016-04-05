@@ -11,10 +11,10 @@ import React from 'react'
 
 import '~/src/setup/setup_fake_dom'
 import {
-  asyncIt,
-  renderApp
+  asyncIt
 } from '~/src/async_it'
 import AsyncAction from '~/src/async_action'
+import { mountApp } from '~/src/mount_app'
 
 describe('Async Action', () => {
   asyncIt('resolves on first render of the component listened to when no readyWhen provided', async (done) => {
@@ -36,7 +36,7 @@ describe('Async Action', () => {
       }
     }
 
-    const aRenderedComponent = renderApp(Test)
+    const aRenderedComponent = mountApp(Test)
 
     await new AsyncAction()
     .listenOn(aRenderedComponent)
@@ -67,7 +67,7 @@ describe('Async Action', () => {
       }
     }
 
-    const aRenderedComponent = renderApp(Test)
+    const aRenderedComponent = mountApp(Test)
 
     await new AsyncAction()
     .listenOn(aRenderedComponent)
@@ -95,7 +95,7 @@ describe('Async Action', () => {
       }
     }
 
-    const aRenderedComponent = renderApp(Test)
+    const aRenderedComponent = mountApp(Test)
 
     try {
       await new AsyncAction()
@@ -133,7 +133,7 @@ describe('Async Action', () => {
       }
     }
 
-    const aRenderedComponent = renderApp(Test)
+    const aRenderedComponent = mountApp(Test)
     const sub = findRenderedComponentWithType(aRenderedComponent, Test)
 
     try {
@@ -184,7 +184,7 @@ describe('Async Action', () => {
       }
     }
 
-    const aRenderedComponent = renderApp(Test)
+    const aRenderedComponent = mountApp(Test)
     const sub = findRenderedComponentWithType(aRenderedComponent, Test)
 
     try {
@@ -198,5 +198,37 @@ describe('Async Action', () => {
     }
 
     assert.fail('No errors were caught')
+  })
+
+  asyncIt('can have many asyncAction in a test', async (done) => {
+    class Test extends React.Component {
+      constructor () {
+        super()
+        this.state = { counter: 0 }
+        this.someAction = this.someAction.bind(this)
+      }
+
+      someAction () {
+        this.setState({ counter: this.state.counter + 1 })
+      }
+
+      render () {
+        return <h1>{this.state.counter}</h1>
+      }
+    }
+
+    const aRenderedComponent = mountApp(Test)
+
+    await new AsyncAction()
+    .listenOn(aRenderedComponent)
+    .triggerWith(aRenderedComponent.someAction)
+
+    await new AsyncAction()
+    .listenOn(aRenderedComponent)
+    .triggerWith(aRenderedComponent.someAction)
+
+    const numberOfAction = 2
+    assert.deepStrictEqual(aRenderedComponent.state.counter, numberOfAction)
+    done()
   })
 })

@@ -5,12 +5,8 @@
 import assert from 'assert'
 import sinon from 'sinon'
 
-import React from 'react'
-
 import {
-  _cleanDom,
-  _decorateTest,
-  renderApp
+  _decorateTest
 } from '~/src/async_it'
 
 describe('Async it', () => {
@@ -38,58 +34,6 @@ describe('Async it', () => {
 
       assert(done.calledOnce, 'done was not called once but:' + done.callCount)
       assert(done.calledWith(someError), 'done was not called with the error')
-    })
-  })
-
-  describe('cleanDom', () => {
-    it('does not throw anything if the app has not been rendered... even without fake dom', () => {
-      _cleanDom()
-    })
-
-    describe('renderApp', () => {
-      it('mounts the app', () => {
-        let isMounted = false
-
-        class App extends React.Component {
-          componentDidMount () {
-            isMounted = true
-          }
-
-          render () {
-            return <h1>This is my fantastic App !</h1>
-          }
-        }
-        require('../src/setup/setup_fake_dom')
-        renderApp(App)
-
-        _cleanDom()
-
-        assert(isMounted)
-      })
-    })
-
-    it('remove the app/root component of the fake dom', () => {
-      let isMounted = false
-
-      class App extends React.Component {
-        componentDidMount () {
-          isMounted = true
-        }
-
-        componentWillUnmount () {
-          isMounted = false
-        }
-
-        render () {
-          return <h1>This is my fantastic App !</h1>
-        }
-      }
-      require('../src/setup/setup_fake_dom')
-      renderApp(App)
-
-      _cleanDom()
-
-      assert.strictEqual(isMounted, false)
     })
   })
 })

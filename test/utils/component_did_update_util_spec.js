@@ -14,7 +14,7 @@ import '~/src/setup/setup_fake_dom'
 import {
   listenOnComponentDidUpdate,
   restoreComponentDidUpdate
-} from '~/src/component_did_update_util'
+} from '~/src/utils/component_did_update_util'
 
 describe('Component Did Update Utility', () => {
   const oldListener = sinon.spy()
