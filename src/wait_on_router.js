@@ -8,6 +8,8 @@ import {
   listenOnComponentDidUpdate
 } from '~/src/utils/component_did_update_util'
 
+// TODO check this out: https://github.com/reactjs/react-router/issues/1060
+
 export function waitToBeOnRoute (app, targetRoute, trigger) {
   if (typeof trigger !== 'function') {
     throw new Error('The trigger should be a function that will trigger the route change')

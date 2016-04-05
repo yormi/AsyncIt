@@ -3,5 +3,7 @@
 import 'babel-polyfill'
 
 import '~/src/setup_fake_dom'
-import 'unexpected'
-import 'unexpected-react'
+import unexpected from 'unexpected'
+import unexpectedReact from 'unexpected-react'
+
+export default unexpected.clone().use(unexpectedReact)
