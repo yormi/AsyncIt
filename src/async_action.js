@@ -1,6 +1,13 @@
 'use strict'
 
 import {
+  noMoreReject,
+  setCurrentReject
+} from '~/src/handler_react_component_lifecycle_error'
+import {
+  getMountedApp
+} from '~/src/mount_app'
+import {
   listenOnComponentDidUpdate,
   restoreComponentDidUpdate
 } from '~/src/utils/component_did_update_util'
@@ -10,7 +17,7 @@ export default class {
     const FIRST_RENDER = () => true
 
     this._readyWhen = FIRST_RENDER
-    this._component
+    this._component = getMountedApp()
     this._isDebugModeOn = false
   }
 
@@ -33,6 +40,10 @@ export default class {
     const self = this
     return new Promise(function (resolve, reject) {
       self._setUpListener(resolve, reject)
+      setCurrentReject((error) => {
+        restore(self._component)
+        reject(error)
+      })
       actionFunction()
     })
   }
@@ -40,28 +51,33 @@ export default class {
   _setUpListener (resolve, reject) {
     listenOnComponentDidUpdate(this._component, () => {
       try {
-        if (this._isDebugModeOn) {
-          printLog(this._component)
-        }
+        debug(this._component, this._isDebugModeOn)
 
         if (this._readyWhen()) {
-          restoreComponentDidUpdate(this._component)
+          restore(this._component)
           resolve()
         }
       } catch (err) {
-        restoreComponentDidUpdate(this._component)
+        restore(this._component)
         reject(err)
       }
     })
   }
 }
 
-function printLog (component) {
-  const propsKeys = Object.keys(component.props)
-  const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
+const restore = (component) => {
+  restoreComponentDidUpdate(component)
+  noMoreReject()
+}
 
-  console.info('State:\n', JSON.stringify(component.state, null, '    '))
-  console.info('Props:\n', JSON.stringify(component.props, null, '    '))
-  console.info('Function props:\n', functionPropsName)
-  console.info('\n\n')
+const debug = (component, isDebugModeOn) => {
+  if (isDebugModeOn) {
+    const propsKeys = Object.keys(component.props)
+    const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
+
+    console.info('State:\n', JSON.stringify(component.state, null, '    '))
+    console.info('Props:\n', JSON.stringify(component.props, null, '    '))
+    console.info('Function props:\n', functionPropsName)
+    console.info('\n\n')
+  }
 }

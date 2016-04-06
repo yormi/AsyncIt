@@ -78,7 +78,48 @@ describe('Async Action', () => {
     done()
   })
 
-  asyncIt('an error in the action function is thrown out of the await block', async (done) => {
+  asyncIt('throws the error thrown within an async render out of the await block', async (done) => {
+    const newState1 = { text: 'Carot' }
+    const newState2 = { text: 'Potato' }
+    const someError = new Error('blahblabla')
+
+    class Test extends React.Component {
+      constructor () {
+        super()
+        this.state = { text: 'Banana' }
+        this.someAction = this.someAction.bind(this)
+      }
+
+      someAction () {
+        this.setState(newState1)
+        setTimeout(() => this.setState(newState2), 10)
+      }
+
+      render () {
+        if (this.state.text === newState2.text) {
+          throw someError
+        }
+        return <h1>{this.state.text}</h1>
+      }
+    }
+
+    const aRenderedComponent = mountApp(Test)
+
+    try {
+      await new AsyncAction()
+      .listenOn(aRenderedComponent)
+      .readyWhen(() => aRenderedComponent.state.text === newState2.text)
+      .triggerWith(aRenderedComponent.someAction)
+    } catch (err) {
+      assert.equal(err, someError)
+      done()
+      return
+    }
+
+    assert.fail('No error were thrown')
+  })
+
+  asyncIt('throws the error in the action function out of the await block', async (done) => {
     const someError = new Error('some error')
     class Test extends React.Component {
       constructor () {
@@ -110,7 +151,7 @@ describe('Async Action', () => {
     assert.fail('No errors were caught')
   })
 
-  asyncIt('an error in the render method (or other lifecycle method) is thrown out of the await block', async (done) => {
+  asyncIt('throws the error thrown in the render method (or other lifecycle method) out of the await block', async (done) => {
     const someError = new Error('some error')
 
     class Test extends React.Component {
@@ -149,7 +190,7 @@ describe('Async Action', () => {
     assert.fail('No errors were caught')
   })
 
-  asyncIt('an error in the render method (or other lifecycle method) of a sub component is thrown out of the await block', async (done) => {
+  asyncIt('throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block', async (done) => {
     const someError = new Error('some error')
 
     class Test extends React.Component {

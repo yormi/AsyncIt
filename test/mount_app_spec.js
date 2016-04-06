@@ -41,7 +41,7 @@ describe('unmountApp', () => {
 })
 
 describe('mountApp', () => {
-  it('mounts the app', () => {
+  it('mounts the app into the fake dom', () => {
     let isMounted = false
 
     class App extends React.Component {

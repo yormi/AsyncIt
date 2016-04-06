@@ -4,31 +4,29 @@ import React from 'react'
 import {
   renderIntoDocument
 } from 'react-addons-test-utils'
-import wrapReactLifecycleMethodsWithTryCatch, { config } from 'react-component-errors'
+import {
+  wrapLifecycleMethodsWithTryCatch
+} from '~/src/handler_react_component_lifecycle_error'
 import {
   unmountComponentAtNode,
   findDOMNode
 } from 'react-dom'
 
-config.errorHandler = (errorReport) => {
-  throw errorReport.error
-}
+let mountedApp
 
-let renderedApp
-
-export const getRenderedApp = () => renderedApp
+export const getMountedApp = () => mountedApp
 
 export const mountApp = (RootComponent, props) => {
-  wrapReactLifecycleMethodsWithTryCatch(RootComponent)
-  renderedApp = renderIntoDocument(<RootComponent {...props} />)
-  return renderedApp
+  wrapLifecycleMethodsWithTryCatch(RootComponent)
+  mountedApp = renderIntoDocument(<RootComponent {...props} />)
+  return mountedApp
 }
 
 export const unmountApp = () => {
   try {
-    if (renderedApp) {
-      unmountComponentAtNode(findDOMNode(renderedApp).parentNode)
-      renderedApp = null
+    if (mountedApp) {
+      unmountComponentAtNode(findDOMNode(mountedApp).parentNode)
+      mountedApp = null
     }
   } catch (err) {
     console.info('Error while cleaning the dom: ', err)

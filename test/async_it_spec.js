@@ -18,7 +18,7 @@ describe('Async it', () => {
       done.reset()
     })
 
-    it('catches synchronous error in the test and pass it to done', async () => {
+    it('catches synchronous error in the test and passes it to done', async () => {
       const test = sinon.stub().throws(someError)
       await _decorateTest(test)(done)
       assert(done.calledOnce, 'done was not called once but:' + done.callCount)
