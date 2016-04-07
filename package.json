@@ -1,5 +1,5 @@
 {
-  "name": "async-it",
+  "name": "test-them-all",
   "version": "0.1.0",
   "description": "Solution for easy integration/end-to-end test with React",
   "main": "dist/src/index.js",
@@ -12,10 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yormi/AsyncIt.git"
+    "url": "git+https://github.com/yormi/test-them-all.git"
   },
   "keywords": [
-    "React"
+    "React",
+    "test",
+    "end",
+    "integration"
   ],
   "author": "Guillaume Lambert <glamb93@gmail.com>",
   "license": "MIT",

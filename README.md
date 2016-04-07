@@ -1,4 +1,4 @@
-# AsyncIt
+# test-them-all
 
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for
 someone !
