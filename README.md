@@ -4,6 +4,8 @@ My quest to make integration-system-functional test with React easy. Hopefully i
 someone !
 
 - [How to install ?](#how-to-install-)
+  - [Polyfill](#how-to-install-)
+  - [Why to require it in the mocha call ?](#Why-to-require-it-in-the-mocha-call-)
 - [How to use this thing ?](#how-to-use-this-thing-)
 - [Why ?](#why-)
 - [Featuring](#featuring)
