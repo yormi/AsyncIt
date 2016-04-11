@@ -3,6 +3,7 @@
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for
 someone !
 
+- [How to install ?](#how-to-install-)
 - [How to use this thing ?](#how-to-use-this-thing-)
 - [Why ?](#why-)
 - [Featuring](#featuring)
@@ -19,6 +20,33 @@ someone !
 - [Troubleshooting](#troubleshooting)
 - [Feedbacks... Contributions...](#feedbacks-contributions)
 - [Todo](#todo)
+
+## How to install ?
+
+```
+npm install -D test-them-all
+```
+
+### Polyfill
+
+As any user of many ES6+ goodies, a polyfill is needed. I suggest [`babel-polyfill`] :)
+
+```
+npm install -D babel-polyfill
+```
+
+I recommend to include the polyfill in the test command. For ES5, without babel compiler, I would personnally use something like:
+
+```
+mocha test/end_to_end/ -r babel-polyfill -r test-them-all --recursive
+```
+
+### Why to require it in the mocha call ?
+
+To use `unexpected-react` a special setup with a specific order of require/import is required. This
+is done for you but you need to make sure that `React` is not imported before `test-them-all`.
+
+I just find way less trouble to import it in the test call.
 
 ## How to use this thing ?
 ```javascript

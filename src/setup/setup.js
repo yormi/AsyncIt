@@ -1,7 +1,5 @@
 'use strict'
 
-import 'babel-polyfill'
-
 // order important here
 import '~/src/setup/setup_fake_dom'
 import unexpected from 'unexpected'
