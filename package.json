@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "NODE_ENV=production babel src --out-dir dist/src",
-    "test": "NODE_ENV=dev mocha test --compilers js:babel-core/register -r babel-polyfill --recursive",
+    "test": "NODE_ENV=dev mocha test --compilers js:babel-core/register -r babel-polyfill -r src/setup/setup --recursive",
     "test-watch": "nodemon -q --exec 'npm run test -s'",
     "lint": "standard | snazzy",
     "posttest": "npm run lint -s",
@@ -51,6 +51,7 @@
   "dependencies": {
     "jsdom": "^8.3.1",
     "react-component-errors": "git+https://github.com/staxmanade/react-component-errors.git",
+    "react-router": "^2.3.0",
     "unexpected": "^10.13.0",
     "unexpected-react": "^3.0.2"
   },

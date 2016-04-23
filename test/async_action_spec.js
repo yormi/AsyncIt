@@ -8,15 +8,63 @@ import {
 } from 'react-addons-test-utils'
 
 import React from 'react'
+import { Router, Route, createMemoryHistory } from 'react-router'
 
-import '~/src/setup/setup_fake_dom'
-import {
-  asyncIt
-} from '~/src/async_it'
+import expect from '~/src/setup/setup'
+import { asyncIt } from '~/src/async_it'
 import AsyncAction from '~/src/async_action'
-import { mountApp } from '~/src/mount_app'
+import { mountApp, getRouterComponent } from '~/src/mount_app'
 
 describe('Async Action', () => {
+  describe('wait for a route', () => {
+    const history = createMemoryHistory()
+    class Test extends React.Component {
+      render () {
+        const routes = (
+          <Route>
+            <Route path='/' component={() => <h1>Failure</h1>} />
+            <Route path='foo' component={() => <h1>Success</h1>} />
+            <Route path='baz' component={() => <h1>Failure</h1>} />
+          </Route>
+        )
+
+        return <Router routes={routes} history={history} />
+      }
+    }
+
+    asyncIt('resolve when router location is the same than the target route path', async (done) => {
+      const app = mountApp(Test)
+
+      await changeRoute(app, '/foo')
+
+      expect(app, 'to contain', <h1>Success</h1>)
+
+      done()
+    })
+
+    asyncIt('can have more than one waitRoute in a test', async (done) => {
+      const app = mountApp(Test)
+
+      await changeRoute(app, '/baz')
+      await changeRoute(app, '/baz')
+      await changeRoute(app, '/foo')
+
+      expect(app, 'to contain', <h1>Success</h1>)
+
+      done()
+    })
+
+    const changeRoute = async (app, newRoute) => {
+      const asyncRouteChange = () => {
+        setTimeout(() => getRouterComponent().router.push(newRoute), 0)
+      }
+
+      await new AsyncAction()
+      .trigger(asyncRouteChange)
+      .waitRoute(newRoute)
+    }
+  })
+
   asyncIt('resolves on first render of the component listened to when no readyWhen provided', async (done) => {
     const newState = { text: 'Potato' }
 
@@ -46,7 +94,7 @@ describe('Async Action', () => {
     done()
   })
 
-  asyncIt('resolves when the readyWhen function return true of the component listened to', async (done) => {
+  asyncIt('resolves when the readyWhen function returns true', async (done) => {
     const newState1 = { text: 'Carot' }
     const newState2 = { text: 'Potato' }
 

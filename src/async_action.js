@@ -5,7 +5,8 @@ import {
   setCurrentReject
 } from '~/src/handler_react_component_lifecycle_error'
 import {
-  getMountedApp
+  getMountedApp,
+  getRouterComponent
 } from '~/src/mount_app'
 import {
   listenOnComponentDidUpdate,
@@ -19,6 +20,8 @@ export default class {
     this._readyWhen = FIRST_RENDER
     this._component = getMountedApp()
     this._isDebugModeOn = false
+    this._debugFunction = defaultDebugFunction
+    this._trigger
   }
 
   debug () {
@@ -31,27 +34,64 @@ export default class {
     return this
   }
 
-  readyWhen (testFunction) {
+  trigger (triggerFunction) {
+    if (typeof triggerFunction !== 'function') {
+      throw new Error('The trigger should be a functioni. This function has to trigger the route change')
+    }
+
+    this._trigger = triggerFunction
+    return this
+  }
+
+  waitProps (testFunction) {
+    if (typeof testFunction !== 'function') {
+      throw new Error('The provided test should be a function that returns true when the props are in the wanted state')
+    }
+
     this._readyWhen = testFunction
     return this
   }
 
-  triggerWith (actionFunction) {
-    const self = this
-    return new Promise(function (resolve, reject) {
-      self._setUpListener(resolve, reject)
+  waitState (testFunction) {
+    if (typeof testFunction !== 'function') {
+      throw new Error('The provided test should be a function that returns true when the props are in the wanted state')
+    }
+
+    this._readyWhen = testFunction
+    return this
+  }
+
+  waitRoute (targetRoutePath) {
+    if (typeof this._trigger !== 'function') {
+      throw new Error('The trigger should be a function that will trigger the route change')
+    }
+
+    const router = getRouterComponent()
+
+    this._component = router
+    this._readyWhen = () => router.state.location.pathname === targetRoutePath
+    this._debugFunction = () => console.info('DEBUG :: Router location:', router.state.location.pathname)
+
+    return this._promiseFactory()
+  }
+
+  _promiseFactory () {
+    return new Promise((resolve, reject) => {
+      this._setUpListener(resolve, reject)
+
       setCurrentReject((error) => {
-        restore(self._component)
+        restore(this._component)
         reject(error)
       })
-      actionFunction()
+
+      this._trigger()
     })
   }
 
   _setUpListener (resolve, reject) {
     listenOnComponentDidUpdate(this._component, () => {
       try {
-        debug(this._component, this._isDebugModeOn)
+        this._debug()
 
         if (this._readyWhen()) {
           restore(this._component)
@@ -63,6 +103,12 @@ export default class {
       }
     })
   }
+
+  _debug () {
+    if (this._isDebugModeOn) {
+      this._debugFunction(this._component)
+    }
+  }
 }
 
 const restore = (component) => {
@@ -70,11 +116,12 @@ const restore = (component) => {
   noMoreReject()
 }
 
-const debug = (component, isDebugModeOn) => {
+const defaultDebugFunction = (component, isDebugModeOn) => {
   if (isDebugModeOn) {
     const propsKeys = Object.keys(component.props)
     const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
 
+    console.info('DEBUG ::')
     console.info('State:\n', JSON.stringify(component.state, null, '    '))
     console.info('Props:\n', JSON.stringify(component.props, null, '    '))
     console.info('Function props:\n', functionPropsName)

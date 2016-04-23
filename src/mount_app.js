@@ -2,19 +2,23 @@
 
 import React from 'react'
 import {
+  findRenderedComponentWithType,
   renderIntoDocument
 } from 'react-addons-test-utils'
-import {
-  wrapLifecycleMethodsWithTryCatch
-} from '~/src/handler_react_component_lifecycle_error'
 import {
   unmountComponentAtNode,
   findDOMNode
 } from 'react-dom'
+import { Router } from 'react-router'
+
+import {
+  wrapLifecycleMethodsWithTryCatch
+} from '~/src/handler_react_component_lifecycle_error'
 
 let mountedApp
 
 export const getMountedApp = () => mountedApp
+export const getRouterComponent = (app) => findRenderedComponentWithType(mountedApp, Router)
 
 export const mountApp = (RootComponent, props) => {
   wrapLifecycleMethodsWithTryCatch(RootComponent)
