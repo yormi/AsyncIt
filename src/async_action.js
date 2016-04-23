@@ -44,35 +44,39 @@ export default class {
   }
 
   waitProps (testFunction) {
-    if (typeof testFunction !== 'function') {
-      throw new Error('The provided test should be a function that returns true when the props are in the wanted state')
-    }
-
-    this._readyWhen = testFunction
-    return this
+    const component = this._component
+    this._readyWhen = () => testFunction(component.props)
+    this._invariants()
+    return this._promiseFactory()
   }
 
   waitState (testFunction) {
-    if (typeof testFunction !== 'function') {
-      throw new Error('The provided test should be a function that returns true when the props are in the wanted state')
-    }
-
-    this._readyWhen = testFunction
-    return this
+    const component = this._component
+    this._readyWhen = () => testFunction(component.state)
+    this._invariants()
+    return this._promiseFactory()
   }
 
   waitRoute (targetRoutePath) {
-    if (typeof this._trigger !== 'function') {
-      throw new Error('The trigger should be a function that will trigger the route change')
-    }
-
     const router = getRouterComponent()
 
     this._component = router
     this._readyWhen = () => router.state.location.pathname === targetRoutePath
     this._debugFunction = () => console.info('DEBUG :: Router location:', router.state.location.pathname)
 
+    this._invariants()
+
     return this._promiseFactory()
+  }
+
+  _invariants () {
+    if (typeof this._trigger !== 'function') {
+      throw new Error('The trigger should be a function. This function should bring to the wanted state or the AsyncAction will hang there')
+    }
+
+    if (typeof this._readyWhen !== 'function') {
+      throw new Error('The provided test should be a function. This function should returns true when the props are in the wanted state')
+    }
   }
 
   _promiseFactory () {
