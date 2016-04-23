@@ -212,6 +212,6 @@ Oh, oh ! Why not `npm run lint` as well :)
 ## Todo
 
 * [] batch version of expect to contain
-* [] have a "now" instead of triggerWith
-* [] rename triggerWith to trigger !?
-* [] waitOnRoute
+* [] fix error catching test
+* [] having-many test
+* [] test invariants

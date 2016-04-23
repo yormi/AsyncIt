@@ -45,7 +45,6 @@ describe('wait for props', () => {
     const subTest = findRenderedComponentWithType(aRenderedComponent, SubTest)
 
     await new AsyncAction()
-    .debug()
     .listenOn(subTest)
     .trigger(aRenderedComponent.someAction)
     .waitProps((props) => props.children === newState2.text)

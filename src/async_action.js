@@ -47,14 +47,14 @@ export default class {
     const component = this._component
     this._readyWhen = () => testFunction(component.props)
     this._invariants()
-    return this._promiseFactory()
+    return this._lunchAction()
   }
 
   waitState (testFunction) {
     const component = this._component
     this._readyWhen = () => testFunction(component.state)
     this._invariants()
-    return this._promiseFactory()
+    return this._lunchAction()
   }
 
   waitRoute (targetRoutePath) {
@@ -66,7 +66,7 @@ export default class {
 
     this._invariants()
 
-    return this._promiseFactory()
+    return this._lunchAction()
   }
 
   _invariants () {
@@ -79,6 +79,12 @@ export default class {
     }
   }
 
+  _lunchAction () {
+    const promise = this._promiseFactory()
+    this._trigger()
+    return promise
+  }
+
   _promiseFactory () {
     return new Promise((resolve, reject) => {
       this._setUpListener(resolve, reject)
@@ -87,8 +93,6 @@ export default class {
         restore(this._component)
         reject(error)
       })
-
-      this._trigger()
     })
   }
 
@@ -120,15 +124,13 @@ const restore = (component) => {
   noMoreReject()
 }
 
-const defaultDebugFunction = (component, isDebugModeOn) => {
-  if (isDebugModeOn) {
-    const propsKeys = Object.keys(component.props)
-    const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
+const defaultDebugFunction = (component) => {
+  const propsKeys = Object.keys(component.props)
+  const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
 
-    console.info('DEBUG ::')
-    console.info('State:\n', JSON.stringify(component.state, null, '    '))
-    console.info('Props:\n', JSON.stringify(component.props, null, '    '))
-    console.info('Function props:\n', functionPropsName)
-    console.info('\n\n')
-  }
+  console.info('DEBUG ::')
+  console.info('State:\n', JSON.stringify(component.state, null, '    '))
+  console.info('Props:\n', JSON.stringify(component.props, null, '    '))
+  console.info('Function props:\n', functionPropsName)
+  console.info('\n\n')
 }
