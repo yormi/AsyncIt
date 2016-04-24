@@ -1,6 +1,6 @@
 {
   "name": "test-them-all",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Solution for easy integration/end-to-end test with React",
   "main": "dist/src/index.js",
   "scripts": {
