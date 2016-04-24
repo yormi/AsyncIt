@@ -35,7 +35,7 @@ export default class {
 
   trigger (triggerFunction) {
     if (typeof triggerFunction !== 'function') {
-      throw new Error('The trigger should be a functioni. This function has to trigger the route change')
+      throw new Error('The trigger should be a function. This function should bring to the wanted state or the AsyncAction will hang there')
     }
 
     this._trigger = triggerFunction
@@ -77,18 +77,25 @@ export default class {
       throw new Error('A component must be provided so that the action can hook on his componentDidUpdate')
     }
 
-    if (typeof this._trigger !== 'function') {
-      throw new Error('The trigger should be a function. This function should bring to the wanted state or the AsyncAction will hang there')
-    }
-
     if (typeof this._readyWhen !== 'function') {
       throw new Error('The provided test should be a function. This function should returns true when the props are in the wanted state')
     }
   }
 
   _lunchAction () {
+    if (!this._trigger) {
+      this._debug()
+      if (this._readyWhen()) {
+        return
+      }
+    }
+
     const promise = this._promiseFactory()
-    this._trigger()
+
+    if (this._trigger) {
+      this._trigger()
+    }
+
     return promise
   }
 
