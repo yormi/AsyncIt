@@ -4,12 +4,10 @@
 
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for someone !
 
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [test-them-all](#test-them-all)
   - [How to install ?](#how-to-install-)
   - [How to use this thing ?](#how-to-use-this-thing-)
   - [Why ?](#why-)
@@ -197,42 +195,16 @@ expect(renderedComponent, 'to contain', [
 ])
 ```
 
-Moreover, the setup is already made for you. See [unexpected-react doc](https://github.com/bruderstein/unexpected-react) for more details.
-
-#####
-
-## Jist of the test suite
-
-```
-  Async it
-    function passed to mocha's it
-      ✓ catches synchronous error in the test and passes it to done
-      ✓ catches error in an async call in the provided async test and pass it to done
-
-  Async Action
-    ✓ can have many asyncAction in a test
-    waitRoute
-      ✓ resolve when router location is the same than the target route path
-      ✓ can have more than one waitRoute in a test
-    wait for props
-      ✓ resolves when the test provided to waitProps pass
-    waitState
-      ✓ resolves when the test provided to waitState pass
-    Error catching
-      ✓ throws the error thrown within an async render out of the await block
-      ✓ throws the error in the action function out of the await block
-      ✓ throws the error thrown in the render method (or other lifecycle method) out of the await block
-      ✓ throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block
-```
+Moreover, the setup is already made for you. See [unexpected-react](https://github.com/bruderstein/unexpected-react) for more details.
 
 ## Troubleshooting
 
-Don't forget to reject the promises if you're using any. Just throwing in a promise without rejecting will swallow the error.
+Don't forget to reject the promises if you're using any. Just throwing an error in a promise without rejecting will swallow the error.
 
 ## Feedbacks... Contributions...
 
 Highly appreciated ! I'm unfortunately not perfect yet.
 
-For pull request,
+For pull requests,
 Just make sure to add tests with your work.
 Oh, oh ! Why not `npm run lint` as well :)
