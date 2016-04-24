@@ -74,14 +74,14 @@ asyncIt('displays the current count', async (done) => {
   await new AsyncAction()
     .listenOn(renderedComponent)
     .trigger(renderedComponent.asyncIncrease)
-    .waitState((state))
+    .waitState((state) => state.count === 1)
 
   expect(renderedComponent, 'to contain', <p>1</p>)
   done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
 
-If you don't need to test the component in between two change, you can use the action without the trigger. I personally prefer always using the trigger to have the action in one statement/block except when the trigger is the initial render (for async fetch in `componentWillMount` for instance).
+If you don't need to test the component in between two change, you can use the action without a trigger. I personally prefer always using the trigger to have the action in one statement/block except when the trigger is the initial render (for async fetch in `componentWillMount` for instance).
 ```javascript
 asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
   const renderedComponent = mountApp(Test)
@@ -90,7 +90,7 @@ asyncIt('displays succeeded when the asyncAction is successful', async (done) =>
     .listenOn(renderedComponent)
     .waitState((state) => state.name === 'some fetched name')
 
-  expect(renderedComponent, 'to contain', <p>1</p>)
+  expect(renderedComponent, 'to contain', <h1>some fetched name</h1>)
   done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
