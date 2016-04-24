@@ -68,7 +68,7 @@ I just find it way less trouble to import it in the test call.
 ## How to use this thing ?
 
 ```javascript
-asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
+asyncIt('displays the current count', async (done) => {
   const renderedComponent = mountApp(Test)
 
   await new AsyncAction()
@@ -76,7 +76,7 @@ asyncIt('displays succeeded when the asyncAction is successful', async (done) =>
     .trigger(renderedComponent.asyncIncrease)
     .waitState((state))
 
-  expect(renderedComponent, 'to contain', <h1>1</h1>)
+  expect(renderedComponent, 'to contain', <p>1</p>)
   done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
@@ -85,13 +85,12 @@ If you don't need to test the component in between two change, you can use the a
 ```javascript
 asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
   const renderedComponent = mountApp(Test)
-
-  renderedComponent.asyncIncrease()
+  
   await new AsyncAction()
     .listenOn(renderedComponent)
-    .waitState((state))
+    .waitState((state) => state.name === 'some fetched name')
 
-  expect(renderedComponent, 'to contain', <h1>1</h1>)
+  expect(renderedComponent, 'to contain', <p>1</p>)
   done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
@@ -103,13 +102,14 @@ class Test extends React.Component {
   constructor () {
    super()
    this.state = {
-     actionCount: 0
+     actionCount: 0,
+     name: 'foo'
    }
    this.increase = this.increase.bind(this)
   }
   
   async componentWillMount () {
-    this.state.name = await fetchName()
+    this.state.name = await fetchName() // will return 'some fetched name'
   }
 
   async asyncIncrease () {
@@ -125,7 +125,10 @@ class Test extends React.Component {
   }
 
   render () {
-    return <h1>{this.state.count}</h1>
+    return (
+      <h1>{this.state.name}</h1>
+      <p>{this.state.counter}</p>
+    )
   }
 }
 ```
