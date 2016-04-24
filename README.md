@@ -1,3 +1,5 @@
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
 # test-them-all
 
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for someone !
@@ -186,7 +188,18 @@ Return `this`.
 
 #### `expect`
 
-It is actually the expect of unexpected-react but the setup is already made for you. See [unexpected-react doc](https://github.com/bruderstein/unexpected-react).
+It is almost the same expect of unexpected-react but it allows batch testing. Just pass an array as the last parameter like so:
+
+```javascript
+expect(renderedComponent, 'to contain', [
+  <li>foo</li>,
+  <li>bar</li>
+])
+```
+
+Moreover, the setup is already made for you. See [unexpected-react doc](https://github.com/bruderstein/unexpected-react) for more details.
+
+#####
 
 ## Jist of the test suite
 
@@ -223,7 +236,3 @@ Highly appreciated ! I'm unfortunately not perfect yet.
 For pull request,
 Just make sure to add tests with your work.
 Oh, oh ! Why not `npm run lint` as well :)
-
-## TODO's
-
-* [] batch version of expect to contain
