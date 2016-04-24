@@ -8,7 +8,7 @@ import AsyncAction from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('waitState', () => {
-  asyncIt('resolves on first render of the component listened to when no readyWhen provided', async (done) => {
+  asyncIt('resolves when the test provided to waitState pass', async (done) => {
     const newState = { text: 'Potato' }
 
     class Test extends React.Component {
@@ -19,7 +19,7 @@ describe('waitState', () => {
       }
 
       someAction () {
-        this.setState(newState)
+        setTimeout(() => this.setState(newState), 0)
       }
 
       render () {

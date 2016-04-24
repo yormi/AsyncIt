@@ -5,7 +5,6 @@ import {
   setCurrentReject
 } from '~/src/handler_react_component_lifecycle_error'
 import {
-  getMountedApp,
   getRouterComponent
 } from '~/src/mount_app'
 import {
@@ -18,7 +17,7 @@ export default class {
     const FIRST_RENDER = () => true
 
     this._readyWhen = FIRST_RENDER
-    this._component = getMountedApp()
+    this._component
     this._isDebugModeOn = false
     this._debugFunction = defaultDebugFunction
     this._trigger
@@ -58,6 +57,10 @@ export default class {
   }
 
   waitRoute (targetRoutePath) {
+    if (this._component) {
+      console.warn('The listenOn you provided will be ignore since we listen for the router to change route')
+    }
+
     const router = getRouterComponent()
 
     this._component = router
@@ -70,6 +73,10 @@ export default class {
   }
 
   _invariants () {
+    if (!this._component) {
+      throw new Error('A component must be provided so that the action can hook on his componentDidUpdate')
+    }
+
     if (typeof this._trigger !== 'function') {
       throw new Error('The trigger should be a function. This function should bring to the wanted state or the AsyncAction will hang there')
     }

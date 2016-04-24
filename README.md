@@ -2,23 +2,43 @@
 
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for someone !
 
-- [How to install ?](#how-to-install-)
-- [How to use this thing ?](#how-to-use-this-thing-)
-- [Why ?](#why-)
-- [Featuring](#featuring)
-- [API](#api)
-  - [`asyncIt`](#asyncitdescription-test)
-  - [`mountApp`](#mountapprootcomponent-props)
-  - [`AsyncAction`](#asyncaction-class)
-    - [`listenOn`](#listenonrenderedcomponent)
-    - [`readyWhen`](#readywhentestfunction)
-    - [`debug`](#debug)
-    - [`triggerWith`](#triggerwithactionfunction)
-  - [`expect`](#expect)
-- [Jist of the Test Suite](#jist-of-the-test-suite)
-- [Troubleshooting](#troubleshooting)
-- [Feedbacks... Contributions...](#feedbacks-contributions)
-- [Todo](#todo)
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [test-them-all](#test-them-all)
+  - [How to install ?](#how-to-install-)
+  - [How to use this thing ?](#how-to-use-this-thing-)
+  - [Why ?](#why-)
+  - [API](#api)
+      - [`asyncIt (description, test)`](#asyncitdescription-test)
+      - [`mountApp (RootComponent, props)`](#mountapprootcomponent-props)
+      - [`AsyncAction` class](#asyncaction-class)
+        - [`listenOn(renderedComponent)`](#listenonrenderedcomponent)
+        - [`trigger (actionFunction)`](#triggeractionfunction)
+        - [`waitProps (testFunction)`](#waitpropstestfunction)
+        - [`waitState (testFunction)`](#waitstatetestfunction)
+        - [`waitRoute (targetRoutePath)`](#waitroutetargetroutepath)
+        - [`debug ()`](#debug)
+      - [`expect`](#expect)
+  - [Jist of the test suite](#jist-of-the-test-suite)
+  - [Troubleshooting](#troubleshooting)
+  - [Feedbacks... Contributions...](#feedbacks-contributions)
+  - [Todo](#todo)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Why ?
+
+* Simplify and uniformize tests
+* Remove boiler plate
+* Improve the feedback loop through logging:
+      * Sync errors
+      * Errors in `asyncAction`s
+      * Errors in React component lifecycle methods
+      * `state` and `props` of the relevant component (in debug mode of `asyncAction`s)
+
 
 ## How to install ?
 
@@ -50,25 +70,22 @@ I just find it way less trouble to import it in the test call.
 ## How to use this thing ?
 
 ```javascript
-asyncIt('display succeeded when the asyncAction is successful', async (done) => {
-  const aRenderedComponent = mountApp(Test)
+asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
+  const renderedComponent = mountApp(Test)
 
   await new AsyncAction()
-    .listenOn(aRenderedComponent)
-    .triggerWith(aRenderedComponent.someAsyncAction)
+    .listenOn(renderedComponent)
+    .trigger(renderedComponent.asyncIncrease)
+    .waitState((state))
 
-  await new AsyncAction()
-    .listenOn(aRenderedComponent)
-    .triggerWith(aRenderedComponent.someAsyncAction)
-
-  expect(aRenderedComponent, 'to contain', <h1>2</h1>)
+  expect(renderedComponent, 'to contain', <h1>1</h1>)
   done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
 
 Used to test this component:
 ```javascript
-/* Nothing special with the component... just here as context to the test... */
+/* Nothing special with the component... just here as context for the test... */
 class Test extends React.Component {
   constructor () {
    super()
@@ -78,7 +95,7 @@ class Test extends React.Component {
    this.increase = this.increase.bind(this)
   }
 
-  async increase () {
+  async asyncIncrease () {
     const count = this.state.count + 1
      try {
        await asyncDarkMagic()
@@ -96,37 +113,19 @@ class Test extends React.Component {
 }
 ```
 
-## Why ?
-
-* Simplify and uniformize tests
-* Remove boiler plate
-* Improve the feedback loop through logging:
-  * Sync errors
-  * Errors in `asyncAction`s
-  * Errors in React component lifecycle methods
-  * `state` and `props` of the relevant component (in debug mode of `asyncAction`s)
-
-## Featuring:
-
-* mocha
-* unexp- [Polyfill](#how-to-install-)
-  - [Why to require it in the mocha call ?](#Why-to-require-it-in-the-mocha-call-)ected-react
-* react-component-errors
-* jsdom
-* React and its test-utils (dah !)
 
 ## API
 
-#### `asyncIt(description, test)`
+#### `asyncIt (description, test)`
 
 The only thing that it does is making sure that the fake DOM is cleaned after the test, whether it suceeded or failed. Use it exactly like the `it` in [mocha](https://mochajs.org/). `asyncIt.only` and `asyncIt.skip` work the same as well.
 
-#### `mountApp(RootComponent, props)`
+#### `mountApp (RootComponent, props)`
 
 ##### `RootComponent`
 
 The class or function, not the JSX as with it would be with renderIntoDocument.
-It just wraps the lifecycle method of the component and keeps a reference of the the app for the DOM cleaning.
+It just wraps the lifecycle method of the component and keeps a reference of the the app for the DOM cleaning and to get a hand on the Router.
 That simple !
 
 ```javascript
@@ -139,62 +138,78 @@ export const mountApp = (RootComponent, props) => {
 
 #### `AsyncAction` class
 
-Some sort of builder simplifying async action in our test. Using `triggerWith` instead of the common build.
+Some sort of builder simplifying async action in our test.
 
-##### `listenOn(renderedComponent)`
+##### `listenOn (renderedComponent)`
 
-Tell the action which `renderedComponent` to listen to the update. The default is the app mounted
-with `mountApp`.
+Tell the action which `renderedComponent` to listen to the updates. This will be ignore if when using `waitRoute`.
 
-Throws an error if the provided component is not a React Component.
+Return `this`.
 
-##### `readyWhen(testFunction)`
+##### `trigger (actionFunction)`
 
-###### `testFunction`
+###### `actionFunction`
+
+Should trigger a reaction that'll make the app/component get to th wanted state
+eventually. Otherwise, the test will hang within this `AsyncAction`.
+
+Return `this`.
+
+##### `waitProps (testFunction)`
+
+###### `testFunction (props)`
 
 The `AsyncAction` is checking after every render of the component provided with `listenOn` if `testFunction` returns true to resolve.
 
-Throws an error if the provided argument is not a function.
+The `props` of the component provided with `listenOn` is passed to `testFunction` as parameter.
 
-##### `debug()`
+##### `waitState (testFunction)`
+
+###### `testFunction (state)`
+
+The `AsyncAction` is checking after every render of the component provided with `listenOn` if `testFunction` returns true to resolve.
+
+The `state` of the component provided with `listenOn` is passed to `testFunction` as parameter.
+
+##### `waitRoute (targetRoutePath)`
+
+To simplify useless overwork, a special method has been added
+
+##### `debug ()`
 
 `console.log` the `state` and the `props` of the component that is listened to at every test with
 `readyWhen`.
 
-##### `triggerWith(actionFunction)`
+In the case of `waitRoute`, only the `pathname` of the current location is logged.
 
-###### `actionFunction`
-
-Should trigger a reaction that'll make the `testFunction` provided with `readyWhen` return true
-eventually. Otherwise, the test will hang within this `AsyncAction`. Use last. This is the "build of the AsyncAction "builder".
-
-Returns a promise.
+Return `this`.
 
 #### `expect`
 
-It is actually     ✓ mounts the app into the fake dom
-the expect of unexpected-react but the setup is already made for you. See
-[unexpected-react doc](https://github.com/bruderstein/unexpected-react).
+It is actually the expect of unexpected-react but the setup is already made for you. See [unexpected-react doc](https://github.com/bruderstein/unexpected-react).
 
 ## Jist of the test suite
 
 ```
-  Async Action
-    ✓ resolves on first render of the component listened to when no readyWhen provided
-    ✓ resolves when the readyWhen function return true of the component listened to
-    ✓ throws the error thrown within an async render out of the await block
-    ✓ throws the error in the action function out of the await block
-    ✓ throws the error thrown in the render method (or other lifecycle method) out of the await block
-    ✓ throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block
-    ✓ can have many asyncAction in a test
-
   Async it
     function passed to mocha's it
       ✓ catches synchronous error in the test and passes it to done
       ✓ catches error in an async call in the provided async test and pass it to done
 
-  mountApp
-    ✓ mounts the app into the fake dom
+  Async Action
+    ✓ can have many asyncAction in a test
+    waitRoute
+      ✓ resolve when router location is the same than the target route path
+      ✓ can have more than one waitRoute in a test
+    wait for props
+      ✓ resolves when the test provided to waitProps pass
+    waitState
+      ✓ resolves when the test provided to waitState pass
+    Error catching
+      ✓ throws the error thrown within an async render out of the await block
+      ✓ throws the error in the action function out of the await block
+      ✓ throws the error thrown in the render method (or other lifecycle method) out of the await block
+      ✓ throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block
 ```
 
 ## Troubleshooting
@@ -209,9 +224,6 @@ For pull request,
 Just make sure to add tests with your work.
 Oh, oh ! Why not `npm run lint` as well :)
 
-## Todo
+## TODO's
 
 * [] batch version of expect to contain
-* [] fix error catching test
-* [] having-many test
-* [] test invariants

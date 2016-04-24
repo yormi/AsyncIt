@@ -9,7 +9,7 @@ import AsyncAction from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('wait for props', () => {
-  asyncIt('resolves when the readyWhen function returns true', async (done) => {
+  asyncIt('resolves when the test provided to waitProps pass', async (done) => {
     const newState1 = { text: 'Carot' }
     const newState2 = { text: 'Potato' }
 
