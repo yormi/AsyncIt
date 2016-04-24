@@ -35,9 +35,9 @@ My quest to make integration-system-functional test with React easy. Hopefully i
 * Remove boiler plate
 * Improve the feedback loop through logging:
       * Sync errors
-      * Errors in `asyncAction`s
+      * Errors in `asyncAction`'s
       * Errors in React component lifecycle methods
-      * `state` and `props` of the relevant component (in debug mode of `asyncAction`s)
+      * `state` and `props` of the relevant component (in debug mode of `asyncAction`'s)
 
 
 ## How to install ?
