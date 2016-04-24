@@ -22,10 +22,8 @@ My quest to make integration-system-functional test with React easy. Hopefully i
         - [`waitRoute (targetRoutePath)`](#waitroutetargetroutepath)
         - [`debug ()`](#debug)
       - [`expect`](#expect)
-  - [Jist of the test suite](#jist-of-the-test-suite)
   - [Troubleshooting](#troubleshooting)
   - [Feedbacks... Contributions...](#feedbacks-contributions)
-  - [Todo](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -34,10 +32,10 @@ My quest to make integration-system-functional test with React easy. Hopefully i
 * Simplify and uniformize tests
 * Remove boiler plate
 * Improve the feedback loop through logging:
-      * Sync errors
-      * Errors in `asyncAction`'s
-      * Errors in React component lifecycle methods
-      * `state` and `props` of the relevant component (in debug mode of `asyncAction`'s)
+  * Sync errors
+  * Errors in `asyncAction`'s
+  * Errors in React component lifecycle methods
+  * `state` and `props` of the relevant component (in debug mode of `asyncAction`'s)
 
 
 ## How to install ?
@@ -48,7 +46,7 @@ npm install -D test-them-all
 
 ### Polyfill
 
-As any user of many ES6+ goodies, a polyfill is needed. I suggest [`babel-polyfill`] :)
+As any user of many ES6+ goodies, a polyfill is needed. I suggest `babel-polyfill` :)
 
 ```
 npm install -D babel-polyfill
@@ -83,6 +81,21 @@ asyncIt('displays succeeded when the asyncAction is successful', async (done) =>
 })
 ```
 
+If you don't need to test the component in between two change, you can use the action without the trigger. I personally prefer always using the trigger to have the action in one statement/block except when the trigger is the initial render (for async fetch in `componentWillMount` for instance).
+```javascript
+asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
+  const renderedComponent = mountApp(Test)
+
+  renderedComponent.asyncIncrease()
+  await new AsyncAction()
+    .listenOn(renderedComponent)
+    .waitState((state))
+
+  expect(renderedComponent, 'to contain', <h1>1</h1>)
+  done() // don't forget to call done ! That's where the clean up of the fake dom is made
+})
+```
+
 Used to test this component:
 ```javascript
 /* Nothing special with the component... just here as context for the test... */
@@ -93,6 +106,10 @@ class Test extends React.Component {
      actionCount: 0
    }
    this.increase = this.increase.bind(this)
+  }
+  
+  async componentWillMount () {
+    this.state.name = await fetchName()
   }
 
   async asyncIncrease () {
