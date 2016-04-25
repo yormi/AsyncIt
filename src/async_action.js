@@ -1,6 +1,10 @@
 'use strict'
 
 import {
+  isCompositeComponent
+} from 'react-addons-test-utils'
+
+import {
   noMoreReject,
   setCurrentReject
 } from '~/src/handler_react_component_lifecycle_error'
@@ -12,6 +16,14 @@ import {
   restoreComponentDidUpdate
 } from '~/src/utils/component_did_update_util'
 
+export function InvariantError (message) {
+  this.name = 'InvariantError'
+  this.message = message
+  this.stack = (new Error()).stack
+}
+InvariantError.prototype = Object.create(Error.prototype)
+InvariantError.prototype.constructor = InvariantError
+
 export default class {
   constructor () {
     const FIRST_RENDER = () => true
@@ -19,11 +31,18 @@ export default class {
     this._readyWhen = FIRST_RENDER
     this._component
     this._isDebugModeOn = false
-    this._debugFunction = defaultDebugFunction
+    this._debugFunction = (component) => defaultDebugFunction(component, false)
+    this._debugWithRouterStuff = false
     this._trigger
   }
 
-  debug () {
+  debug (debugFunction) {
+    if (typeof debugFunction === 'function') {
+      this._debugFunction = debugFunction
+    } else if (debugFunction) {
+      this._debugFunction = (component) => defaultDebugFunction(component, true)
+    }
+
     this._isDebugModeOn = true
     return this
   }
@@ -74,11 +93,15 @@ export default class {
 
   _invariants () {
     if (!this._component) {
-      throw new Error('A component must be provided so that the action can hook on his componentDidUpdate')
+      throw new InvariantError('A component must be provided so that the action can hook on his componentDidUpdate')
+    }
+
+    if (!isCompositeComponent(this._component)) {
+      throw new InvariantError('The provided component is not a React composite component. A normal DOM element does not allow to hook on it\'s updates')
     }
 
     if (typeof this._readyWhen !== 'function') {
-      throw new Error('The provided test should be a function. This function should returns true when the props are in the wanted state')
+      throw new InvariantError('The provided test should be a function. This function should returns true when the props are in the wanted state')
     }
   }
 
@@ -128,23 +151,41 @@ export default class {
 
   _debug () {
     if (this._isDebugModeOn) {
-      this._debugFunction(this._component)
+      this._debugFunction(this._component, this._debugWithRouterStuff)
     }
   }
 }
 
-const restore = (component) => {
+const restore = (component, withRouterStuff) => {
   restoreComponentDidUpdate(component)
   noMoreReject()
 }
 
-const defaultDebugFunction = (component) => {
-  const propsKeys = Object.keys(component.props)
-  const functionPropsName = propsKeys.filter((key) => typeof component.props[key] === 'function')
+const defaultDebugFunction = (component, withRouterStuff) => {
+  const state = withRouterStuff ? component.state : removeRouterStuff(component.state)
+  const props = withRouterStuff ? component.props : removeRouterStuff(component.props)
 
   console.info('DEBUG ::')
-  console.info('State:\n', JSON.stringify(component.state, null, '    '))
-  console.info('Props:\n', JSON.stringify(component.props, null, '    '))
-  console.info('Function props:\n', functionPropsName)
+  console.info('State:\n', state)
+  console.info('Props:\n', props)
   console.info('\n\n')
+}
+
+const removeRouterStuff = (object) => {
+  const ROUTER_PROPS = [
+    'history',
+    'location',
+    'route',
+    'params',
+    'routeParams',
+    'routes'
+  ]
+
+  const propsKeys = Object.keys(object)
+  const filteredKeys = propsKeys.filter((key) => ROUTER_PROPS.includes(key))
+
+  const filteredObject = {}
+  filteredKeys.map((key) => filteredObject[key] = object[key])
+
+  return filteredObject
 }

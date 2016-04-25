@@ -1,10 +1,14 @@
-/* global describe */
+/* global describe, it */
 
 import assert from 'assert'
+import sinon from 'sinon'
+import {
+findRenderedDOMComponentWithTag
+} from 'react-addons-test-utils'
 import React from 'react'
 
 import { asyncIt } from '~/src/async_it'
-import AsyncAction from '~/src/async_action'
+import AsyncAction, { InvariantError } from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('Async Action', () => {
@@ -74,5 +78,56 @@ describe('Async Action', () => {
 
     assert.deepStrictEqual(aRenderedComponent.state.counter, numberOfIncrease)
     done()
+  })
+
+  describe('debug', () => {
+    it('calls the given debug function', () => {
+      class Test extends React.Component {
+        constructor () {
+          super()
+          this.state = { counter: 0 }
+          this.someAction = this.someAction.bind(this)
+        }
+
+        someAction () {
+          setTimeout(() => this.setState({ counter: this.state.counter + 1 }, 0))
+        }
+
+        render () {
+          return <h1>{this.state.counter}</h1>
+        }
+      }
+
+      const aRenderedComponent = mountApp(Test)
+
+      const spy = sinon.spy()
+      new AsyncAction()
+      .debug(spy)
+      .listenOn(aRenderedComponent)
+      .waitProps((props) => true)
+
+      assert.strictEqual(spy.callCount, 1)
+    })
+  })
+
+  describe('invariants', () => {
+    it('throws if the provided component is not a React composite element', () => {
+      class Test extends React.Component {
+        render () {
+          return <h1>foo</h1>
+        }
+      }
+
+      const app = mountApp(Test)
+      const h1 = findRenderedDOMComponentWithTag(app, 'h1')
+
+      const test = () => {
+        new AsyncAction()
+        .listenOn(h1)
+        .waitProps(() => true)
+      }
+
+      assert.throws(test, InvariantError, 'The right error was not thrown')
+    })
   })
 })
