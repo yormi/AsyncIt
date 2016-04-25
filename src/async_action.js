@@ -31,8 +31,7 @@ export default class {
     this._readyWhen = FIRST_RENDER
     this._component
     this._isDebugModeOn = false
-    this._debugFunction = (component) => defaultDebugFunction(component, false)
-    this._debugWithRouterStuff = false
+    this._debugFunction = defaultDebugFunction
     this._trigger
   }
 
@@ -40,7 +39,7 @@ export default class {
     if (typeof debugFunction === 'function') {
       this._debugFunction = debugFunction
     } else if (debugFunction) {
-      this._debugFunction = (component) => defaultDebugFunction(component, true)
+      throw new InvariantError('The "debug function" provided is not a function')
     }
 
     this._isDebugModeOn = true
@@ -151,41 +150,19 @@ export default class {
 
   _debug () {
     if (this._isDebugModeOn) {
-      this._debugFunction(this._component, this._debugWithRouterStuff)
+      this._debugFunction(this._component)
     }
   }
 }
 
-const restore = (component, withRouterStuff) => {
+const restore = (component) => {
   restoreComponentDidUpdate(component)
   noMoreReject()
 }
 
-const defaultDebugFunction = (component, withRouterStuff) => {
-  const state = withRouterStuff ? component.state : removeRouterStuff(component.state)
-  const props = withRouterStuff ? component.props : removeRouterStuff(component.props)
-
+const defaultDebugFunction = (component) => {
   console.info('DEBUG ::')
-  console.info('State:\n', state)
-  console.info('Props:\n', props)
+  console.info('State:\n', component.state)
+  console.info('Props:\n', component.props)
   console.info('\n\n')
-}
-
-const removeRouterStuff = (object) => {
-  const ROUTER_PROPS = [
-    'history',
-    'location',
-    'route',
-    'params',
-    'routeParams',
-    'routes'
-  ]
-
-  const propsKeys = Object.keys(object)
-  const filteredKeys = propsKeys.filter((key) => ROUTER_PROPS.includes(key))
-
-  const filteredObject = {}
-  filteredKeys.map((key) => filteredObject[key] = object[key])
-
-  return filteredObject
 }

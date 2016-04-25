@@ -195,12 +195,13 @@ The `state` of the component provided with `listenOn` is passed to `testFunction
 
 To simplify useless overwork, a special method has been added
 
-##### `debug ()`
+##### `debug (debugFunction)`
 
-`console.log` the `state` and the `props` of the component that is listened to at every test with
-`readyWhen`.
+`console.log` the `state` and the `props` of the component that is listened to after every render of the given component in `listenOn`.
 
 In the case of `waitRoute`, only the `pathname` of the current location is logged.
+
+If you want to use a custom function, you can always do it via `debugFunction`.
 
 Return `this`.
 

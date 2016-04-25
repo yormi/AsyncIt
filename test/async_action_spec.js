@@ -81,23 +81,13 @@ describe('Async Action', () => {
   })
 
   describe('debug', () => {
-    it('calls the given debug function', () => {
-      class Test extends React.Component {
-        constructor () {
-          super()
-          this.state = { counter: 0 }
-          this.someAction = this.someAction.bind(this)
-        }
-
-        someAction () {
-          setTimeout(() => this.setState({ counter: this.state.counter + 1 }, 0))
-        }
-
-        render () {
-          return <h1>{this.state.counter}</h1>
-        }
+    class Test extends React.Component {
+      render () {
+        return <h1>foo</h1>
       }
+    }
 
+    it('calls the given debug function with component as param', () => {
       const aRenderedComponent = mountApp(Test)
 
       const spy = sinon.spy()
@@ -107,17 +97,18 @@ describe('Async Action', () => {
       .waitProps((props) => true)
 
       assert.strictEqual(spy.callCount, 1)
+      assert(spy.withArgs(aRenderedComponent))
     })
   })
 
   describe('invariants', () => {
-    it('throws if the provided component is not a React composite element', () => {
-      class Test extends React.Component {
-        render () {
-          return <h1>foo</h1>
-        }
+    class Test extends React.Component {
+      render () {
+        return <h1>foo</h1>
       }
+    }
 
+    it('throws if the provided component is not a React composite element', () => {
       const app = mountApp(Test)
       const h1 = findRenderedDOMComponentWithTag(app, 'h1')
 
