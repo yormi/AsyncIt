@@ -23,13 +23,20 @@ asyncIt.skip = (description, test) => {
 
 export const _decorateTest = (test) => {
   return async (done) => {
+    let isDoneAlreadyCalled = false
+
     const enhancedDone = (err) => {
+      isDoneAlreadyCalled = true
       unmountApp()
       done(err)
     }
 
     try {
       await test(enhancedDone)
+
+      if (!isDoneAlreadyCalled) {
+        enhancedDone()
+      }
     } catch (err) {
       enhancedDone(err)
     }
