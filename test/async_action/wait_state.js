@@ -8,7 +8,7 @@ import AsyncAction from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('waitState', () => {
-  asyncIt('resolves when the test provided to waitState pass', async (done) => {
+  asyncIt('resolves when the test provided to waitState pass', async () => {
     const newState = { text: 'Potato' }
 
     class Test extends React.Component {
@@ -35,6 +35,5 @@ describe('waitState', () => {
     .waitState((state) => state.text === newState.text)
 
     assert.deepStrictEqual(aRenderedComponent.state, newState)
-    done()
   })
 })

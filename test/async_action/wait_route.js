@@ -24,14 +24,13 @@ describe('waitRoute', () => {
     }
   }
 
-  asyncIt('resolve when router location is the same than the target route path', async (done) => {
+  asyncIt('resolve when router location is the same than the target route path', async () => {
     const app = mountApp(Test)
     await changeRoute(app, '/foo')
     expect(app, 'to contain', <h1>Success</h1>)
-    done()
   })
 
-  asyncIt('can have more than one waitRoute in a test', async (done) => {
+  asyncIt('can have more than one waitRoute in a test', async () => {
     const app = mountApp(Test)
 
     await changeRoute(app, '/baz')
@@ -39,8 +38,6 @@ describe('waitRoute', () => {
     await changeRoute(app, '/foo')
 
     expect(app, 'to contain', <h1>Success</h1>)
-
-    done()
   })
 
   const changeRoute = async (app, newRoute) => {

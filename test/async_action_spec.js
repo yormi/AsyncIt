@@ -17,7 +17,7 @@ describe('Async Action', () => {
   require('./async_action/wait_state')
   require('./async_action/catch_exception')
 
-  asyncIt('if no trigger is provided, the check is done right away and after every subsequent render', async (done) => {
+  asyncIt('if no trigger is provided, the check is done right away and after every subsequent render', async () => {
     class Test extends React.Component {
       constructor () {
         super()
@@ -43,10 +43,9 @@ describe('Async Action', () => {
     .waitState((state) => state.counter === numberOfIncrease)
 
     assert.deepStrictEqual(aRenderedComponent.state.counter, numberOfIncrease)
-    done()
   })
 
-  asyncIt('can have many asyncAction in a test', async (done) => {
+  asyncIt('can have many asyncAction in a test', async () => {
     class Test extends React.Component {
       constructor () {
         super()
@@ -77,7 +76,6 @@ describe('Async Action', () => {
     .waitState((state) => state.counter === numberOfIncrease)
 
     assert.deepStrictEqual(aRenderedComponent.state.counter, numberOfIncrease)
-    done()
   })
 
   describe('debug', () => {

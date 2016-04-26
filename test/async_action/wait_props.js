@@ -9,7 +9,7 @@ import AsyncAction from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('wait for props', () => {
-  asyncIt('resolves when the test provided to waitProps pass', async (done) => {
+  asyncIt('resolves when the test provided to waitProps pass', async () => {
     const newState1 = { text: 'Carot' }
     const newState2 = { text: 'Potato' }
 
@@ -50,6 +50,5 @@ describe('wait for props', () => {
     .waitProps((props) => props.children === newState2.text)
 
     assert.deepStrictEqual(subTest.props.children, newState2.text)
-    done()
   })
 })

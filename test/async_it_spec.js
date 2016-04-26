@@ -26,9 +26,8 @@ describe('Async it', () => {
     })
 
     it('catches error in an async call in the provided async test and pass it to done', async () => {
-      const test = async (done) => {
+      const test = async () => {
         await simulateAsyncCall(() => { throw someError })
-        done()
       }
 
       await _decorateTest(test)(done)
@@ -37,8 +36,8 @@ describe('Async it', () => {
       assert(done.calledWith(someError), 'done was not called with the error')
     })
 
-    it('calls the enhancedDone if it is not called in the test', async (done) => {
-      const test = async (done) => {
+    it('calls the enhancedDone', async (done) => {
+      const test = async () => {
         await simulateAsyncCall(() => { return 1 + 1 })
       }
 

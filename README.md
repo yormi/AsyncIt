@@ -68,7 +68,7 @@ I just find it way less trouble to import it in the test call.
 ## How to use this thing ?
 
 ```javascript
-asyncIt('displays the current count', async (done) => {
+asyncIt('displays the current count', async () => {
   const renderedComponent = mountApp(Test)
 
   await new AsyncAction()
@@ -77,13 +77,12 @@ asyncIt('displays the current count', async (done) => {
     .waitState((state) => state.count === 1)
 
   expect(renderedComponent, 'to contain', <p>1</p>)
-  done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
 
 If you don't need to test the component in between two change, you can use the action without a trigger. I personally prefer always using the trigger to have the action in one statement/block except when the trigger is the initial render (for async fetch in `componentWillMount` for instance).
 ```javascript
-asyncIt('displays succeeded when the asyncAction is successful', async (done) => {
+asyncIt('displays succeeded when the asyncAction is successful', async () => {
   const renderedComponent = mountApp(Test)
   
   await new AsyncAction()
@@ -91,7 +90,6 @@ asyncIt('displays succeeded when the asyncAction is successful', async (done) =>
     .waitState((state) => state.name === 'some fetched name')
 
   expect(renderedComponent, 'to contain', <h1>some fetched name</h1>)
-  done() // don't forget to call done ! That's where the clean up of the fake dom is made
 })
 ```
 
@@ -139,6 +137,8 @@ class Test extends React.Component {
 #### `asyncIt (description, test)`
 
 The only thing that it does is making sure that the fake DOM is cleaned after the test, whether it suceeded or failed. Use it exactly like the `it` in [mocha](https://mochajs.org/). `asyncIt.only` and `asyncIt.skip` work the same as well.
+
+***Attention ! Unlike `mocha`, there's not done parameter. You have to make sure your test is over when it returns or otherwise you have to return a promise.
 
 #### `mountApp (RootComponent, props)`
 
@@ -221,6 +221,8 @@ Moreover, the setup is already made for you. See [unexpected-react](https://gith
 ## Troubleshooting
 
 Don't forget to reject the promises if you're using any. Just throwing an error in a promise without rejecting will swallow the error.
+
+The test pass when it should not ? Make sure your test is over when it returns or otherwise you have to return a promise.
 
 ## Feedbacks... Contributions...
 

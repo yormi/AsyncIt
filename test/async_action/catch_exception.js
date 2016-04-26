@@ -12,7 +12,7 @@ import AsyncAction from '~/src/async_action'
 import { mountApp } from '~/src/mount_app'
 
 describe('Error catching', () => {
-  asyncIt('throws the error thrown within an async render out of the await block', async (done) => {
+  asyncIt('throws the error thrown within an async render out of the await block', async () => {
     const newState1 = { text: 'Carot' }
     const newState2 = { text: 'Potato' }
     const someError = new Error('blahblabla')
@@ -46,14 +46,13 @@ describe('Error catching', () => {
       .waitState((state) => state.text === newState2.text)
     } catch (err) {
       assert.equal(err, someError)
-      done()
       return
     }
 
     assert.fail('No error were thrown')
   })
 
-  asyncIt('throws the error in the action function out of the await block', async (done) => {
+  asyncIt('throws the error in the action function out of the await block', async () => {
     const someError = new Error('some error')
     class Test extends React.Component {
       constructor () {
@@ -79,14 +78,13 @@ describe('Error catching', () => {
       .waitProps(() => true)
     } catch (err) {
       assert.equal(err, someError)
-      done()
       return
     }
 
     assert.fail('No errors were caught')
   })
 
-  asyncIt('throws the error thrown in the render method (or other lifecycle method) out of the await block', async (done) => {
+  asyncIt('throws the error thrown in the render method (or other lifecycle method) out of the await block', async () => {
     const someError = new Error('some error')
 
     class Test extends React.Component {
@@ -119,14 +117,13 @@ describe('Error catching', () => {
       .waitProps(() => true)
     } catch (err) {
       assert.equal(err, someError)
-      done()
       return
     }
 
     assert.fail('No errors were caught')
   })
 
-  asyncIt('throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block', async (done) => {
+  asyncIt('throws the error thrown in the render method (or other lifecycle method) of a sub component out of the await block', async () => {
     const someError = new Error('some error')
 
     class Test extends React.Component {
@@ -171,7 +168,6 @@ describe('Error catching', () => {
       .waitProps(() => true)
     } catch (err) {
       assert.equal(err, someError)
-      done()
       return
     }
 
