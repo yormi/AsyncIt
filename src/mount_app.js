@@ -3,6 +3,7 @@
 import React from 'react'
 import {
   findRenderedComponentWithType,
+  scryRenderedComponentsWithType,
   renderIntoDocument
 } from 'react-addons-test-utils'
 import {
@@ -18,7 +19,14 @@ import {
 let mountedApp
 
 export const getMountedApp = () => mountedApp
-export const getRouterComponent = (app) => findRenderedComponentWithType(mountedApp, Router)
+export const getRouterComponent = () => {
+  try {
+    return findRenderedComponentWithType(mountedApp, Router)
+  } catch (err) {
+    const routers = scryRenderedComponentsWithType(mountedApp, Router)
+    throw new Error(`There is not only one react-router Router component but ${routers.length}.`)
+  }
+}
 
 export const mountApp = (RootComponent, props) => {
   wrapLifecycleMethodsWithTryCatch(RootComponent)
