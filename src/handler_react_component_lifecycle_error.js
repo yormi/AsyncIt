@@ -17,8 +17,8 @@ const handleReactLifecycleErrors = (errorReport) => {
 
 config.errorHandler = handleReactLifecycleErrors
 
-export const setCurrentReject = (newReject) => currentReject = newReject
+export const setCurrentReject = (newReject) => { currentReject = newReject }
 
-export const noMoreReject = () => currentReject = null
+export const noMoreReject = () => { currentReject = null }
 
 export const wrapLifecycleMethodsWithTryCatch = wrapReactLifecycleMethodsWithTryCatch
