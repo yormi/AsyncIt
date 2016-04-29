@@ -10,22 +10,36 @@ import {
   unmountComponentAtNode,
   findDOMNode
 } from 'react-dom'
-import { Router } from 'react-router'
 
 import {
   wrapLifecycleMethodsWithTryCatch
 } from '~/src/handler_react_component_lifecycle_error'
 
 let mountedApp
+let Router
 
 export const getMountedApp = () => mountedApp
 export const getRouterComponent = () => {
+  const Router = getReactRouter()
+
   try {
     return findRenderedComponentWithType(mountedApp, Router)
   } catch (err) {
     const routers = scryRenderedComponentsWithType(mountedApp, Router)
     throw new Error(`There is not only one react-router Router component but ${routers.length}.`)
   }
+}
+
+const getReactRouter = () => {
+  if (!Router) {
+    try {
+      Router = require('react-router').Router
+    } catch (err) {
+      throw new Error('"react-router" must be install in your project. Otherwise, test-them-all routing feature doesn\'t make sense')
+    }
+  }
+
+  return Router
 }
 
 export const mountApp = (RootComponent, props) => {

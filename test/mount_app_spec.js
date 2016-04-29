@@ -4,7 +4,7 @@
 
 import assert from 'assert'
 import React from 'react'
-import { Router, createMemoryHistory } from 'react-router'
+import { Router, Route, createMemoryHistory } from 'react-router'
 
 import {
   getRouterComponent,
@@ -13,10 +13,16 @@ import {
 } from '~/src/mount_app'
 
 describe('getRouterComponent', () => {
+  const Title = () => <h1>Yo</h1>
+  const route = <Route path='/' component={Title} />
+  const routerComponent = (
+    <Router routes={route} history={createMemoryHistory()} />
+  )
+
   it('returns the router component if there is one', () => {
     class Test extends React.Component {
       render () {
-        return <Router routes={{}} history={createMemoryHistory()} />
+        return routerComponent
       }
     }
     mountApp(Test)
@@ -29,8 +35,8 @@ describe('getRouterComponent', () => {
       render () {
         return (
           <div>
-            <Router routes={{}} history={createMemoryHistory()} />
-            <Router routes={{}} history={createMemoryHistory()} />
+            {routerComponent}
+            {routerComponent}
           </div>
         )
       }
