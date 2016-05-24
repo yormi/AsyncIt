@@ -23,7 +23,8 @@ export const getRouterComponent = () => {
   const Router = getReactRouter()
 
   try {
-    return findRenderedComponentWithType(mountedApp, Router)
+    const a = findRenderedComponentWithType(mountedApp, Router)
+    return a
   } catch (err) {
     const routers = scryRenderedComponentsWithType(mountedApp, Router)
     throw new Error(`There is not only one react-router Router component but ${routers.length}.`)

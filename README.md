@@ -44,6 +44,11 @@ My quest to make integration-system-functional test with React easy. Hopefully i
 npm install -D test-them-all
 ```
 
+Needless to say that you need to have `react` installed. You also need:
+* `reat-dom`
+* `react-addons-test-utils`
+* `react-router` (Optional: only if you want to use [`waitRoute`](#waitroutetargetroutepath))
+
 ### Polyfill
 
 As any user of many ES6+ goodies, a polyfill is needed. I suggest `babel-polyfill` :)
@@ -61,7 +66,7 @@ mocha test/end_to_end/ -r babel-polyfill -r test-them-all --recursive
 ### Why to require it in the mocha call ?
 
 To use `unexpected-react` a special setup with a specific order of require/import is required. This
-is done for you but you need to make sure that `React` is not imported before `test-them-all`.
+is done for you but you need to make sure that `react` is not imported before `test-them-all`.
 
 I just find it way less trouble to import it in the test call.
 
