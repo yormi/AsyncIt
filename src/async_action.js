@@ -60,21 +60,21 @@ export default class {
     return this
   }
 
-  waitProps (testFunction) {
+  async waitProps (testFunction) {
     const component = this._component
     this._readyWhen = () => testFunction(component.props)
     this._invariants()
-    return this._lunchAction()
+    return await this._lunchAction()
   }
 
-  waitState (testFunction) {
+  async waitState (testFunction) {
     const component = this._component
     this._readyWhen = () => testFunction(component.state)
     this._invariants()
-    return this._lunchAction()
+    return await this._lunchAction()
   }
 
-  waitRoute (targetRoutePath) {
+  async waitRoute (targetRoutePathOrFn) {
     if (this._component) {
       console.warn('The listenOn you provided will be ignore since we listen for the router to change route')
     }
@@ -82,12 +82,24 @@ export default class {
     const router = getRouterComponent()
 
     this._component = router
-    this._readyWhen = () => router.state.location.pathname === targetRoutePath
+    this._readyWhen = this._getRouteTestFunction(router, targetRoutePathOrFn)
     this._debugFunction = () => console.info('DEBUG :: Router location:', router.state.location.pathname)
 
     this._invariants()
 
-    return this._lunchAction()
+    return await this._lunchAction()
+  }
+
+  _getRouteTestFunction (router, targetRoutePathOrFn) {
+    if (typeof targetRoutePathOrFn === 'string') {
+      const targetRoutePath = targetRoutePathOrFn
+      return () => router.state.location.pathname === targetRoutePath
+    } else {
+      const testFunction = () => {
+        return targetRoutePathOrFn(router.state.location.pathname)
+      }
+      return testFunction
+    }
   }
 
   _invariants () {
@@ -104,7 +116,7 @@ export default class {
     }
   }
 
-  _lunchAction () {
+  async _lunchAction () {
     if (!this._trigger) {
       this._debug()
       if (this._readyWhen()) {
@@ -115,7 +127,7 @@ export default class {
     const promise = this._promiseFactory()
 
     if (this._trigger) {
-      this._trigger()
+      await this._trigger()
     }
 
     return promise

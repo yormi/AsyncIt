@@ -30,6 +30,13 @@ describe('waitRoute', () => {
     expect(app, 'to contain', <h1>Success</h1>)
   })
 
+  asyncIt('resolve when the given function returns true', async () => {
+    const app = mountApp(Test)
+    const aRoute = '/foo'
+    await changeRoute(app, aRoute, (route) => route === aRoute)
+    expect(app, 'to contain', <h1>Success</h1>)
+  })
+
   asyncIt('can have more than one waitRoute in a test', async () => {
     const app = mountApp(Test)
 
@@ -40,13 +47,13 @@ describe('waitRoute', () => {
     expect(app, 'to contain', <h1>Success</h1>)
   })
 
-  const changeRoute = async (app, newRoute) => {
+  const changeRoute = async (app, newRoute, testFunction) => {
     const asyncRouteChange = () => {
       setTimeout(() => getRouterComponent().router.push(newRoute), 0)
     }
 
     await new AsyncAction()
     .trigger(asyncRouteChange)
-    .waitRoute(newRoute)
+    .waitRoute(testFunction || newRoute)
   }
 })

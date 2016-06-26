@@ -2,10 +2,6 @@
 
 /* global it */
 
-import {
-  unmountApp
-} from '~/src/mount_app'
-
 export const asyncIt = (description, test) => {
   const decoratedTest = _decorateTest(test)
   it(description, decoratedTest)
@@ -23,16 +19,11 @@ asyncIt.skip = (description, test) => {
 
 export const _decorateTest = (test) => {
   return async (done) => {
-    const enhancedDone = (err) => {
-      unmountApp()
-      done(err)
-    }
-
     try {
       await test()
-      enhancedDone()
+      done()
     } catch (err) {
-      enhancedDone(err)
+      done(err)
     }
   }
 }

@@ -106,17 +106,24 @@ describe('Async Action', () => {
       }
     }
 
-    it('throws if the provided component is not a React composite element', () => {
+    asyncIt('throws if the provided component is not a React composite element', async () => {
       const app = mountApp(Test)
       const h1 = findRenderedDOMComponentWithTag(app, 'h1')
 
-      const test = () => {
-        new AsyncAction()
+      const test = async () => {
+        await new AsyncAction()
         .listenOn(h1)
         .waitProps(() => true)
       }
 
-      assert.throws(test, InvariantError, 'The right error was not thrown')
+      try {
+        await test()
+      } catch (err) {
+        assert(err instanceof InvariantError, 'Not the right error')
+        return
+      }
+
+      assert.fail('No errors were thrown')
     })
   })
 })

@@ -52,7 +52,7 @@ describe('unmountApp', () => {
     unmountApp()
   })
 
-  it('remove the app/root component of the fake dom', () => {
+  it('unmount the app/root component of the fake dom', () => {
     let isMounted = false
 
     class App extends React.Component {
