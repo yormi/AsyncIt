@@ -11,7 +11,7 @@ import {
   findDOMNode
 } from 'react-dom'
 
-import { reinitializeDom } from '~/src/setup/setup_fake_dom'
+import initializeDom from '~/src/setup/setup_fake_dom'
 import {
   wrapLifecycleMethodsWithTryCatch
 } from '~/src/handler_react_component_lifecycle_error'
@@ -56,7 +56,7 @@ export const unmountApp = () => {
       unmountComponentAtNode(findDOMNode(mountedApp).parentNode)
       mountedApp = null
     }
-    reinitializeDom()
+    initializeDom()
   } catch (err) {
     console.info('Error while cleaning the dom: ', err)
   }

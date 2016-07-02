@@ -2,14 +2,10 @@
 
 import jsdom from 'jsdom'
 
-export default function initializeDom () {
-  if (typeof document !== 'undefined') return
-  const doc = createGlobalDocument()
-  const win = createGlobalWindow(doc)
-  assignWindowKeyToGlobal(win)
-}
+const needFakeDom = typeof document === 'undefined'
 
-export const reinitializeDom = () => {
+export default function initializeDom () {
+  if (!needFakeDom) return
   const doc = createGlobalDocument()
   const win = createGlobalWindow(doc)
   assignWindowKeyToGlobal(win)
