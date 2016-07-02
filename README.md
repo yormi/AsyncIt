@@ -49,6 +49,11 @@ Needless to say that you need to have `react` installed. You also need:
 * `react-addons-test-utils`
 * `react-router` (Optional: only if you want to use [`waitRoute`](#waitroutetargetroutepath))
 
+You will need 3 other things to setup:
+* A polyfill
+* Import `test-them-all` before anything else
+* Set a global `afterEach` to reset the DOM state
+
 ### Polyfill
 
 As any user of many ES6+ goodies, a polyfill is needed. I suggest `babel-polyfill` :)
@@ -69,6 +74,19 @@ To use `unexpected-react` a special setup with a specific order of require/impor
 is done for you but you need to make sure that `react` is not imported before `test-them-all`.
 
 I just find it way less trouble to import it in the test call.
+
+### Resetting the fake DOM state
+You just need to have a global `afterEach` hook. To achieve that, you can simply create a file like any other of your test file and add this in it. The file has to be in your test folder and fit the regex you might use to filter the test files so that it will be considered by mocha.
+
+```javascript
+/* global afterEach */
+
+import {
+  unmountApp
+} from 'test-them-all'
+
+afterEach(unmountApp)
+```
 
 ## How to use this thing ?
 
