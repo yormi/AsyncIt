@@ -2,10 +2,30 @@
 
 import jsdom from 'jsdom'
 
-const init = () => {
+export default function initializeDom () {
+  if (typeof document !== 'undefined') return
+  const doc = createGlobalDocument()
+  const win = createGlobalWindow(doc)
+  assignWindowKeyToGlobal(win)
+}
+
+export const reinitializeDom = () => {
+  const doc = createGlobalDocument()
+  const win = createGlobalWindow(doc)
+  assignWindowKeyToGlobal(win)
+}
+
+const createGlobalDocument = () => {
   const doc = jsdom.jsdom('<!doctype html><html><body></body></html>', {
     url: 'http://localhost'
   })
+
+  global.document = doc
+
+  return doc
+}
+
+const createGlobalWindow = (doc) => {
   const win = doc.defaultView
 
   win.localStorage = win.sessionStorage = {
@@ -20,15 +40,17 @@ const init = () => {
     }
   }
 
-  global.document = doc
   global.window = win
 
-  Object.keys(window).forEach((key) => {
+  return win
+}
+
+const assignWindowKeyToGlobal = (win) => {
+  Object.keys(win).forEach((key) => {
     if (!(key in global)) {
-      global[key] = window[key]
+      global[key] = win[key]
     }
   })
 }
 
-init()
-export default init
+initializeDom()
