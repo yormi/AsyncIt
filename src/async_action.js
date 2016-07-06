@@ -4,6 +4,7 @@ import {
   isCompositeComponent
 } from 'react-addons-test-utils'
 
+import { isTestInDebugMode } from '~/src/async_it'
 import {
   noMoreReject,
   setCurrentReject
@@ -24,13 +25,17 @@ export function InvariantError (message) {
 InvariantError.prototype = Object.create(Error.prototype)
 InvariantError.prototype.constructor = InvariantError
 
+const FIRST_RENDER = () => true
+
 export default class {
-  constructor () {
-    const FIRST_RENDER = () => true
+  constructor (actionDescription) {
+    if (isTestInDebugMode()) {
+      console.log('\n\nACTION: ' + actionDescription + '\n')
+    }
 
     this._readyWhen = FIRST_RENDER
     this._component
-    this._isDebugModeOn = false
+    this.isActionDebugModeOn = false
     this._debugFunction = defaultDebugFunction
     this._trigger
   }
@@ -42,7 +47,7 @@ export default class {
       throw new InvariantError('The "debug function" provided is not a function')
     }
 
-    this._isDebugModeOn = true
+    this.isActionDebugModeOn = true
     return this
   }
 
@@ -161,7 +166,7 @@ export default class {
   }
 
   _debug () {
-    if (this._isDebugModeOn) {
+    if (this.isActionDebugModeOn) {
       this._debugFunction(this._component)
     }
   }

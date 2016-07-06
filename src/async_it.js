@@ -2,8 +2,11 @@
 
 /* global it */
 
-export const asyncIt = (description, test) => {
-  const decoratedTest = _decorateTest(test)
+let testInDebugMode = false
+export const isTestInDebugMode = () => testInDebugMode
+
+export const asyncIt = (description, test, config) => {
+  const decoratedTest = _decorateTest(test, config)
   it(description, decoratedTest)
 }
 
@@ -17,8 +20,9 @@ asyncIt.skip = (description, test) => {
   it.skip(description, decoratedTest)
 }
 
-export const _decorateTest = (test) => {
+export const _decorateTest = (test, config) => {
   return async (done) => {
+    testInDebugMode = config === 'debug'
     try {
       await test()
       done()
