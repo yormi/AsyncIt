@@ -16,6 +16,52 @@ describe('Error catching', () => {
   const NEW_STATE2 = { text: 'Potato' }
   const AN_ERROR = new Error('blahblabla')
 
+  asyncIt('throws a sync error thrown within the trigger function', async () => {
+    class Test extends React.Component {
+      render () {
+        return <h1>Banana</h1>
+      }
+    }
+
+    const aRenderedComponent = mountApp(Test)
+
+    try {
+      await new AsyncAction()
+        .listenOn(aRenderedComponent)
+        .trigger(() => {
+          throw AN_ERROR
+        })
+        .waitState((state) => state)
+    } catch (err) {
+      assert.equal(err, AN_ERROR)
+      return
+    }
+
+    assert.fail('No error were thrown')
+  })
+
+  asyncIt('throws an async error thrown within the trigger function', async () => {
+    class Test extends React.Component {
+      render () {
+        return <h1>Banana</h1>
+      }
+    }
+
+    const aRenderedComponent = mountApp(Test)
+
+    try {
+      await new AsyncAction()
+        .listenOn(aRenderedComponent)
+        .trigger(async () => Promise.reject(AN_ERROR))
+        .waitState((state) => state)
+    } catch (err) {
+      assert.equal(err, AN_ERROR)
+      return
+    }
+
+    assert.fail('No error were thrown')
+  })
+
   asyncIt('throws the error thrown within an async render out of the await block', async () => {
     class Test extends React.Component {
       constructor () {

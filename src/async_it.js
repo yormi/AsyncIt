@@ -25,6 +25,7 @@ export const _decorateTest = (test, config) => {
     testInDebugMode = config === 'debug'
     try {
       await test()
+      testInDebugMode = false
       done()
     } catch (err) {
       done(err)
