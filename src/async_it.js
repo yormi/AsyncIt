@@ -21,14 +21,14 @@ asyncIt.skip = (description, test) => {
 }
 
 export const _decorateTest = (test, config) => {
-  return async (done) => {
+  return async () => {
     testInDebugMode = config === 'debug'
     try {
       await test()
       testInDebugMode = false
-      done()
     } catch (err) {
-      done(err)
+      testInDebugMode = false
+      throw err
     }
   }
 }

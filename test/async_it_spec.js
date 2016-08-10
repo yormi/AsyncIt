@@ -1,6 +1,6 @@
 'use strict'
 
-/* global describe, beforeEach, it */
+/* global describe, it */
 
 import assert from 'assert'
 import sinon from 'sinon'
@@ -12,38 +12,32 @@ import {
 describe('Async it', () => {
   describe('function passed to mocha\'s it', () => {
     const someError = new Error('hehehe')
-    const done = sinon.spy()
 
-    beforeEach(() => {
-      done.reset()
-    })
-
-    it('catches synchronous error in the test and passes it to done', async () => {
+    it('catches synchronous error in the test', async () => {
       const test = sinon.stub().throws(someError)
-      await _decorateTest(test)(done)
-      assert(done.calledOnce, 'done was not called once but:' + done.callCount)
-      assert(done.calledWith(someError), 'done was not called with the error')
+      try {
+        await _decorateTest(test)()
+      } catch (err) {
+        assert.strictEqual(err, someError)
+        return
+      }
+
+      assert.fail()
     })
 
-    it('catches error in an async call in the provided async test and pass it to done', async () => {
+    it('catches error in an async call in the provided async test', async () => {
       const test = async () => {
         await simulateAsyncCall(() => { throw someError })
       }
 
-      await _decorateTest(test)(done)
-
-      assert(done.calledOnce, 'done was not called once but:' + done.callCount)
-      assert(done.calledWith(someError), 'done was not called with the error')
-    })
-
-    it('calls the enhancedDone', async (done) => {
-      const test = async () => {
-        await simulateAsyncCall(() => { return 1 + 1 })
+      try {
+        await _decorateTest(test)()
+      } catch (err) {
+        assert.strictEqual(err, someError)
+        return
       }
 
-      await _decorateTest(test)(done)
-
-      assert(done.calledOnce, 'done was not called once but:' + done.callCount)
+      assert.fail()
     })
   })
 })
