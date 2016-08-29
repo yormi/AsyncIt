@@ -9,13 +9,13 @@ export const asyncIt = (description, test, config) => {
   it(description, decoratedTest)
 }
 
-asyncIt.only = (description, test) => {
-  const decoratedTest = _decorateTest(test)
+asyncIt.only = (description, test, config) => {
+  const decoratedTest = _decorateTest(test, config)
   it.only(description, decoratedTest)
 }
 
-asyncIt.skip = (description, test) => {
-  const decoratedTest = _decorateTest(test)
+asyncIt.skip = (description, test, config) => {
+  const decoratedTest = _decorateTest(test, config)
   it.skip(description, decoratedTest)
 }
 
