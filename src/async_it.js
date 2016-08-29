@@ -2,8 +2,7 @@
 
 /* global it */
 
-let testInDebugMode = false
-export const isTestInDebugMode = () => testInDebugMode
+import actionLogger from './action_logger'
 
 export const asyncIt = (description, test, config) => {
   const decoratedTest = _decorateTest(test, config)
@@ -22,12 +21,15 @@ asyncIt.skip = (description, test) => {
 
 export const _decorateTest = (test, config) => {
   return async () => {
-    testInDebugMode = config === 'debug'
+    if (config === 'debug') {
+      actionLogger.startTestOnlyLogging()
+    }
+
     try {
       await test()
-      testInDebugMode = false
+      actionLogger.stopTestOnlyLogging()
     } catch (err) {
-      testInDebugMode = false
+      actionLogger.stopTestOnlyLogging()
       throw err
     }
   }

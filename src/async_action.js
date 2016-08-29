@@ -4,7 +4,7 @@ import {
   isCompositeComponent
 } from 'react-addons-test-utils'
 
-import { isTestInDebugMode } from '~/src/async_it'
+import actionLogger from '~/src/action_logger'
 import {
   noMoreReject,
   setCurrentReject
@@ -27,10 +27,10 @@ InvariantError.prototype.constructor = InvariantError
 
 const FIRST_RENDER = () => true
 
-export default class {
+export default class AsyncAction {
   constructor (actionDescription) {
-    if (isTestInDebugMode()) {
-      console.log('\n\nACTION: ' + actionDescription + '\n')
+    if (actionLogger.shouldLogActions()) {
+      console.log('ACTION: ' + actionDescription)
     }
 
     this._readyWhen = FIRST_RENDER

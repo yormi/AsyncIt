@@ -157,11 +157,27 @@ class Test extends React.Component {
 
 ## API
 
-#### `asyncIt (description, test)`
+#### `actionLogger`
 
-The only thing that it does is making sure that the fake DOM is cleaned after the test, whether it suceeded or failed. Use it exactly like the `it` in [mocha](https://mochajs.org/). `asyncIt.only` and `asyncIt.skip` work the same as well.
+Object with 2 methods. Start and stop. I like it easy, what d'you think !? :)
 
-***Attention ! Unlike `mocha`, there's not done parameter. You have to make sure your test is over when it returns or otherwise you have to return a promise.
+##### `start`
+
+Starts the action logging globally (until `actionLogger.stop()` is called). Useful mostly for mocha's hooks such as `before`,`beforeEach`, `after` and so on.
+
+##### `stop`
+
+Well, I'm sure you get it ;)
+
+#### `asyncIt (description, test, config)`
+
+The only thing that it does is making sure that the fake DOM is cleaned after the test, whether it succeeded or failed.
+
+Oh ! It also sets the action logging for the test scope when `config === 'debug'`.
+
+Use it exactly like the `it` in [mocha](https://mochajs.org/). `asyncIt.only` and `asyncIt.skip` work the same as well.
+
+***Attention ! Unlike `mocha`, there's no done parameter. You have to whether make sure your test is over when it returns or returns a promise.
 
 #### `mountApp (RootComponent, props)`
 
@@ -182,6 +198,9 @@ export const mountApp = (RootComponent, props) => {
 #### `AsyncAction` class
 
 Some sort of builder simplifying async action in our test.
+
+##### constructor `new AsyncAction(actionDescription)`
+`actionDescription` is gonna be shown when logging the actions for debugging.
 
 ##### `listenOn (renderedComponent)`
 
@@ -224,7 +243,7 @@ To simplify useless overwork, a special method has been added
 
 In the case of `waitRoute`, only the `pathname` of the current location is logged.
 
-If you want to use a custom function, you can always do it via `debugFunction`.
+If you want to use a custom function, you can always do it via `debugFunction(component)`. You can access the props with `component.props` and the state with `component.state`.
 
 Return `this`.
 

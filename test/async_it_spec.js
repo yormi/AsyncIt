@@ -5,6 +5,7 @@
 import assert from 'assert'
 import sinon from 'sinon'
 
+import actionLogger from '~/src/action_logger'
 import {
   _decorateTest
 } from '~/src/async_it'
@@ -38,6 +39,24 @@ describe('Async it', () => {
       }
 
       assert.fail()
+    })
+
+    it('starts logging when the config "debug" is provided', async () => {
+      let wasLoggingSet = false
+
+      const test = () => {
+        wasLoggingSet = actionLogger.shouldLogActions()
+      }
+
+      await _decorateTest(test, 'debug')()
+
+      assert(wasLoggingSet)
+    })
+
+    it('stops test-only logging after a test', async () => {
+      const test = () => null
+      await _decorateTest(test, null)()
+      assert.strictEqual(actionLogger.shouldLogActions(), false)
     })
   })
 })
