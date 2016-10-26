@@ -4,6 +4,10 @@
 
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for someone !
 
+**React router v4** : test-them-all v3 and up for
+**React router v3** : test-them-all v2
+**React router v2** : test-them-all v2
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
@@ -65,7 +69,7 @@ As any user of many ES6+ goodies, a polyfill is needed. I suggest `babel-polyfil
 npm install -D babel-polyfill
 ```
 
-I recommend to include the polyfill in the test command. If you code in ES5 and don't any compiler, I would personnally use something like:
+I recommend to include the polyfill in the test command. If you code in ES5 and don't use any transpiler, I would  use something like:
 
 ```
 mocha test/end_to_end/ -r babel-polyfill -r test-them-all --recursive
@@ -265,9 +269,16 @@ Moreover, the setup is already made for you. See [unexpected-react](https://gith
 
 ## Troubleshooting
 
-Don't forget to reject the promises if you're using any. Just throwing an error in a promise without rejecting will swallow the error.
+### The test pass when it should not ?
 
-The test pass when it should not ? Make sure your test is over when it returns or otherwise you have to return a promise.
+Make sure your test is over when it returns or otherwise you have to return a promise.
+
+### `Simulate.click(linkComponent)` does not do anything
+
+If you Simulate Clicks on a Link, you have to pass at least the event: `{ button: 0 }` like so:
+```javascript
+Simulate.click(linkComponent, { button: 0 })
+```
 
 ## Feedbacks... Contributions...
 

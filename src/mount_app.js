@@ -2,7 +2,6 @@
 
 import React from 'react'
 import {
-  findRenderedComponentWithType,
   scryRenderedComponentsWithType,
   renderIntoDocument
 } from 'react-addons-test-utils'
@@ -17,36 +16,42 @@ import {
 } from '~/src/handler_react_component_lifecycle_error'
 
 let mountedApp
-let Router
+let router
 
 export const getMountedApp = () => mountedApp
 export const getRouterComponent = () => {
-  const Router = getReactRouter()
+  const router = getReactRouter()
 
   try {
-    const a = findRenderedComponentWithType(mountedApp, Router)
-    return a
+    const routersFound = scryRenderedComponentsWithType(mountedApp, router)
+
+    if (routersFound.length !== 1) throw routersFound.length
+
+    return routersFound[0]
   } catch (err) {
-    const routers = scryRenderedComponentsWithType(mountedApp, Router)
-    throw new Error(`There is not only one react-router Router component but ${routers.length}.`)
+    if (typeof err === 'number') {
+      throw new Error(`There is not only one react-router Router component but ${err}.`)
+    } else {
+      throw err
+    }
   }
 }
 
 const getReactRouter = () => {
-  if (!Router) {
+  if (!router) {
     try {
-      Router = require('react-router').Router
+      router = require('react-router').StaticRouter
     } catch (err) {
       throw new Error('"react-router" must be install in your project. Otherwise, test-them-all routing feature doesn\'t make sense')
     }
   }
 
-  return Router
+  return router
 }
 
-export const mountApp = (RootComponent, props) => {
+export const mountApp = (RootComponent, props = {}, renderFn = renderIntoDocument) => {
   wrapLifecycleMethodsWithTryCatch(RootComponent)
-  mountedApp = renderIntoDocument(<RootComponent {...props} />)
+  mountedApp = renderFn(<RootComponent {...props} />)
   return mountedApp
 }
 

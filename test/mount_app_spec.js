@@ -4,7 +4,13 @@
 
 import assert from 'assert'
 import React from 'react'
-import { Router, Route, createMemoryHistory } from 'react-router'
+import {
+  BrowserRouter,
+  HashRouter,
+  MemoryRouter,
+  ServerRouter,
+  createServerRenderContext
+} from 'react-router'
 
 import {
   getRouterComponent,
@@ -13,32 +19,46 @@ import {
 } from '~/src/mount_app'
 
 describe('getRouterComponent', () => {
-  const Title = () => <h1>Yo</h1>
-  const route = <Route path='/' component={Title} />
-  const routerComponent = (
-    <Router routes={route} history={createMemoryHistory()} />
-  )
-
-  it('returns the router component if there is one', () => {
+  const test = (RouterType, props) => {
     class Test extends React.Component {
       render () {
-        return routerComponent
+        return (
+          <div>
+            <RouterType {...props}>
+              <h1>Banana</h1>
+            </RouterType>
+          </div>
+        )
       }
     }
     mountApp(Test)
 
     assert.ok(getRouterComponent, 'the router is not returned')
+  }
+
+  it('returns the router component if there is a BrowserRouter', () => {
+    test(BrowserRouter)
+  })
+
+  it('returns the router component if there is a HashRouter', () => {
+    test(HashRouter)
+  })
+
+  it('returns the router component if there is a MemoryRouter', () => {
+    test(MemoryRouter)
+  })
+
+  it('returns the router component if there is a ServerRouter', () => {
+    test(ServerRouter, {
+      location: '/banana',
+      context: createServerRenderContext()
+    })
   })
 
   it('throws and error if none is found', () => {
     class Test extends React.Component {
       render () {
-        return (
-          <div>
-            {routerComponent}
-            {routerComponent}
-          </div>
-        )
+        return <h1>Banana</h1>
       }
     }
     mountApp(Test)

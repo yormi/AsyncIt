@@ -30,13 +30,13 @@ const FIRST_RENDER = () => true
 export default class AsyncAction {
   constructor (actionDescription) {
     if (actionLogger.shouldLogActions()) {
-      console.log('ACTION: ' + actionDescription)
+      console.info('ACTION: ' + actionDescription)
     }
 
     this._readyWhen = FIRST_RENDER
     this._component
     this.isActionDebugModeOn = false
-    this._debugFunction = defaultDebugFunction
+    this._debugFunction
     this._trigger
   }
 
@@ -98,10 +98,10 @@ export default class AsyncAction {
   _getRouteTestFunction (router, targetRoutePathOrFn) {
     if (typeof targetRoutePathOrFn === 'string') {
       const targetRoutePath = targetRoutePathOrFn
-      return () => router.state.location.pathname === targetRoutePath
+      return () => router.props.location.pathname === targetRoutePath
     } else {
       const testFunction = () => {
-        return targetRoutePathOrFn(router.state.location.pathname)
+        return targetRoutePathOrFn(router.props.location.pathname)
       }
       return testFunction
     }
@@ -165,9 +165,13 @@ export default class AsyncAction {
     })
   }
 
-  _debug () {
+  _debug (defaultDebug = defaultDebugFunction) {
+    const debugFunction = this._debugFunction || defaultDebug
+
     if (this.isActionDebugModeOn) {
-      this._debugFunction(this._component)
+      console.info('----- DEBUG -----')
+      debugFunction(this._component)
+      console.info('\n')
     }
   }
 }
@@ -178,7 +182,6 @@ const restore = (component) => {
 }
 
 const defaultDebugFunction = (component) => {
-  console.info('DEBUG ::')
   console.info('State:\n', component.state)
   console.info('Props:\n', component.props)
   console.info('\n\n')

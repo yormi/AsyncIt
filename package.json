@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "NODE_ENV=production babel src --out-dir dist/src",
-    "test": "NODE_ENV=dev mocha $(find test -name '*_spec.js') --compilers js:babel-core/register -r babel-polyfill -r src/setup/setup --recursive",
+    "test": "NODE_ENV=dev mocha $(find test -name '*_spec.js') --compilers js:babel-core/register -r babel-polyfill -r src/setup/setup --recursive -w",
     "test-watch": "nodemon -q --exec 'npm run test -s'",
     "lint": "standard | snazzy",
     "posttest": "npm run lint -s",
@@ -44,7 +44,7 @@
     "react": "^15.3.1",
     "react-addons-test-utils": "^15.3.1",
     "react-dom": "^15.3.1",
-    "react-router": "^2.7.0",
+    "react-router": "4.x.x",
     "sinon": "^1.17.5",
     "snazzy": "^4.0.1",
     "standard": "^8.0.0"
