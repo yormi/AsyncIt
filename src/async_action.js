@@ -69,14 +69,14 @@ export default class AsyncAction {
     const component = this._component
     this._readyWhen = () => testFunction(component.props)
     this._invariants()
-    return await this._lunchAction()
+    return await this.launchAction()
   }
 
   async waitState (testFunction) {
     const component = this._component
     this._readyWhen = () => testFunction(component.state)
     this._invariants()
-    return await this._lunchAction()
+    return await this.launchAction()
   }
 
   async waitRoute (targetRoutePathOrFn) {
@@ -92,18 +92,22 @@ export default class AsyncAction {
 
     this._invariants()
 
-    return await this._lunchAction()
+    return await this.launchAction()
   }
 
   _getRouteTestFunction (router, targetRoutePathOrFn) {
-    if (typeof targetRoutePathOrFn === 'string') {
-      const targetRoutePath = targetRoutePathOrFn
-      return () => router.props.location.pathname === targetRoutePath
-    } else {
-      const testFunction = () => {
-        return targetRoutePathOrFn(router.props.location.pathname)
-      }
-      return testFunction
+    switch (typeof targetRoutePathOrFn) {
+      case 'string':
+        const targetRoutePath = targetRoutePathOrFn
+        return () => router.props.location.pathname === targetRoutePath
+      case 'function':
+        const testFunction = () => {
+          return targetRoutePathOrFn(router.props.location.pathname)
+        }
+        return testFunction
+
+      default:
+        throw new Error(`Wait props must be provided with a way to evaluate the route. Either a string or a function with the route as a string as argument will do. Currently ${targetRoutePathOrFn} is passed.`)
     }
   }
 
@@ -121,7 +125,7 @@ export default class AsyncAction {
     }
   }
 
-  async _lunchAction () {
+  async launchAction () {
     if (!this._trigger) {
       this._debug()
       if (this._readyWhen()) {

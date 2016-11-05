@@ -42,7 +42,7 @@ const getReactRouter = () => {
     try {
       router = require('react-router').StaticRouter
     } catch (err) {
-      throw new Error('"react-router" must be install in your project. Otherwise, test-them-all routing feature doesn\'t make sense')
+      throw new Error('"react-router" must be install in your project. Otherwise, test-them-all routing feature doesn\'t make sense. Make sure you have react-router v4. If you do not want to use the version 4 downgrad test-them-all package to a version below 3.')
     }
   }
 

@@ -5,7 +5,9 @@
 My quest to make integration-system-functional test with React easy. Hopefully it'll make sense for someone !
 
 **React router v4** : test-them-all v3 and up for
+
 **React router v3** : test-them-all v2
+
 **React router v2** : test-them-all v2
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -26,7 +28,7 @@ My quest to make integration-system-functional test with React easy. Hopefully i
         - [`trigger (actionFunction)`](#trigger-actionfunction)
         - [`waitProps (testFunction)`](#waitprops-testfunction)
         - [`waitState (testFunction)`](#waitstate-testfunction)
-        - [`waitRoute (targetRoutePath)`](#waitroute-targetroutepath)
+        - [`waitRoute (targetRoutePathOrTestFunction)`](#waitroute-targetroutepath)
         - [`debug (debugFunction)`](#debug-debugfunction)
       - [`expect`](#expect)
   - [Troubleshooting](#troubleshooting)
@@ -240,9 +242,13 @@ The `AsyncAction` is checking after every render of the component provided with 
 
 The `state` of the component provided with `listenOn` is passed to `testFunction` as parameter.
 
-##### `waitRoute (targetRoutePath)`
+##### `waitRoute (targetRoutePathOrTestFunction)`
 
-To simplify useless overwork, a special method has been added
+###### `testFunction (route)`
+
+####### `route` being a string represention `location.pathname`
+
+To simplify useless overwork, a special method has been added to wait for a route transition when using `react-router`.
 
 ##### `debug (debugFunction)`
 
